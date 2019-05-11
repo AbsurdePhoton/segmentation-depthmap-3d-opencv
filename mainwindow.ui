@@ -4032,8 +4032,8 @@ QToolTip {
    <zorder>button_3d_reset</zorder>
    <zorder>button_quit</zorder>
    <zorder>frame_view_parameters</zorder>
-   <zorder>openGLWidget_3d</zorder>
    <zorder>checkBox_3d_capture</zorder>
+   <zorder>openGLWidget_3d</zorder>
   </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
