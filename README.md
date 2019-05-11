@@ -79,8 +79,6 @@ This software should also work under Microsoft Windows: if you tried it successf
 
 ![Screenshot - Gradients](screenshots/screenshot-gradients.jpg?raw=true)
 
-* First, select the algorithm you want to use, and tune the parameters
-
 * Now that you have a rough depthmap and already a not-so-bad 3D view of your image, let's correct the errors and refine the effects!
 
 * For each area, using the gradients panel you can modify your depthmap with gradients
