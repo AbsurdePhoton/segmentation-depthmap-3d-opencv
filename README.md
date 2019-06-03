@@ -83,7 +83,7 @@ This software should also work under Microsoft Windows: if you tried it successf
 
 * For each area, using the gradients panel you can modify your depthmap with gradients
 
-* You can use linear or radial gradients to obtain smooth transitions between areas. When linear or radial mode is selected, there is a white arrow in the depthmap view, one for each area. Use the handles to change the beginning and end of the arrow. Change also the beginning and end gray levels, and voilà a gradient is applied to the current area! Practice is good to understand whats's going on
+* You can use linear or radial gradients to obtain smooth transitions between areas. When linear or radial mode is selected, there is a white arrow in the depthmap view, one for each area. Use the handles to change the beginning and end of the arrow. Change also the beginning and end gray levels, and voilà a gradient is applied to the current area! Practice is good to understand what's going on
 
 * One step further, you can change the gradient curve, for example more of the beginning gray level and less ending gray tone. To achieve this, change the LINEAR mode to another one, and watch your 3D view change. You can for example simulate a sphere-like effect, or give an undulation effect to an entire area
 
