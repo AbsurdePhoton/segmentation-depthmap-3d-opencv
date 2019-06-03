@@ -12,7 +12,7 @@
 * v1.1: created a formula-based system to draw gray gradients -> best control of transitions between the segmented areas and volume/depth in 3D
 * v1.2: hard work to understand how OpenGL works, applied it to obtain a real-time view of RGB+D combination - 3D animation and capture to PNG images - Anaglyph view
 * v1.3: successive optimizations of OpenGL viewing, at last about ten times faster than the first version - Many, many optimizations - several color renderings added to help reduce anaglyph discomforts like ghosting
-* v1.4: Interoperability achieved with .ply 3D mesh export for use in other 3D tools like MeshLab or Blender
+* v1.4: Interoperability achieved with .ply 3D mesh export for use in other 3D tools like MeshLab or Blender + adapted to openCV 4.1
 <br/>
 <br/>
 
@@ -46,7 +46,7 @@ Developed using:
 * QT Creator 3.5
 * Requires these libraries:
   * QT 5
-  * openCV 3.4 compiled with openCV-contribs - should work with 3.x versions without much corrections
+  * openCV 4.1 compiled with openCV-contribs - should work with 3.x versions without much editing
   * OpenGL 1.2 functions minimum
 
 This software should also work under Microsoft Windows: if you tried it successfully please contact me, I'd like to offer compiled Windows executables!

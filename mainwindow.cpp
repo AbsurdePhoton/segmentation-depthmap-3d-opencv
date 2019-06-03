@@ -100,7 +100,7 @@ void MainWindow::InitializeValues() // Global variables init
     zoom = 1; // init zoom
     oldZoom = 1; // to detect a zoom change
     zoom_type = ""; // not set now, can be "button" or (mouse) "wheel"
-    basedir = "/media/";
+    basedir = "/media/DataI5/Photos/Sabine/2018-03-09-Sabine-06-3D/MPO/Depthmap/Ajustées/Calcul/";
     basefile = "example";
     nbLabels = 0; // no labels yet
     updateVertices3D = false; // not an update
@@ -113,7 +113,7 @@ void MainWindow::InitializeValues() // Global variables init
     // load 3D example
     image = QImage2Mat(QImage(":/example/absurdephoton-image.png"));
     depthmap = QImage2Mat(QImage(":/example/absurdephoton-depthmap.png"));
-    cvtColor(depthmap, depthmap, CV_BGR2GRAY);
+    cvtColor(depthmap, depthmap, COLOR_BGR2GRAY);
     ui->openGLWidget_3d->image3D = image; // transfer data to widget
     ui->openGLWidget_3d->depthmap3D = depthmap;
     ui->openGLWidget_3d->area3D = Rect(0, 0, image.cols,image.rows);
@@ -279,7 +279,7 @@ void MainWindow::on_button_load_segmentation_clicked() // load segmentation XML 
     pos = filesession.find("-segmentation-data.xml"); // ends with "-segmentation-data.xml"
     if (pos != std::string::npos) filesession.erase(pos, filesession.length()); // this is what will be used to name files hereafter
 
-    depthmap = cv::imread(filesession + "-segmentation-mask.png", CV_LOAD_IMAGE_COLOR); // load segmentation mask
+    depthmap = cv::imread(filesession + "-segmentation-mask.png", IMREAD_COLOR); // load segmentation mask
     if (depthmap.empty()) { // mask empty, not good !
         QApplication::restoreOverrideCursor(); // Restore cursor
         QMessageBox::critical(this, "File error",
@@ -486,7 +486,7 @@ void MainWindow::on_button_save_depthmap_clicked() // save XML and image depthma
 
     bool write;
     Mat depthmap_temp;
-    cvtColor(depthmap, depthmap_temp, CV_GRAY2RGB);
+    cvtColor(depthmap, depthmap_temp, COLOR_GRAY2RGB);
     write = cv::imwrite(filesession + "-depthmap-mask.png", depthmap_temp); // save depthmap mask
     if (!write) { // problem ?
         QApplication::restoreOverrideCursor(); // Restore cursor
@@ -587,9 +587,9 @@ void MainWindow::on_button_load_depthmap_clicked() // load depthmap XML file
     pos = filesession.find("-depthmap-data.xml"); // ends with "depthmap-data.xml"
     if (pos != std::string::npos) filesession.erase(pos, filesession.length());
 
-    depthmap = cv::imread(filesession + "-depthmap-mask.png", CV_LOAD_IMAGE_COLOR); // load depthmap mask
+    depthmap = cv::imread(filesession + "-depthmap-mask.png", IMREAD_COLOR); // load depthmap mask
     if (depthmap.channels() > 1)
-        cvtColor(depthmap, depthmap, CV_BGR2GRAY);
+        cvtColor(depthmap, depthmap, COLOR_BGR2GRAY);
     if (depthmap.empty()) { // problem ?
         QApplication::restoreOverrideCursor(); // Restore cursor
         QMessageBox::critical(this, "File error",
@@ -797,9 +797,9 @@ void MainWindow::on_button_load_rgbd_clicked() // load previous session
                                             "Images (*.jpg *.JPG *.jpeg *.JPEG *.jp2 *.JP2 *.png *.PNG *.tif *.TIF *.tiff *.TIFF *.bmp *.BMP)"); // depthmap file name
     filesession = filename.toUtf8().constData(); // base file name
 
-    depthmap = cv::imread(filesession, CV_LOAD_IMAGE_COLOR); // load depthmap
+    depthmap = cv::imread(filesession, IMREAD_COLOR); // load depthmap
     if (depthmap.channels() > 1)
-        cvtColor(depthmap, depthmap, CV_BGR2GRAY);
+        cvtColor(depthmap, depthmap, COLOR_BGR2GRAY);
 
     if ((depthmap.empty()) | (image.cols != depthmap.cols) | (image.rows != depthmap.rows)) { // if image and depthmap sizes differ or depthmap empty
         if ((image.cols != depthmap.cols) | (image.rows != depthmap.rows)) // sizes differ
@@ -1046,7 +1046,7 @@ void MainWindow::ShowGradient() // show gradient example from current label
                      gradients[row].beginColor, gradients[row].endColor,
                      ui->listWidget_gradient_curve->currentRow()); // fill shape with gray gradient
 
-    cvtColor(gradient, gradient, CV_GRAY2BGR);
+    cvtColor(gradient, gradient, COLOR_GRAY2BGR);
     QPixmap D;
     D = Mat2QPixmap(gradient);
     ui->label_gradient->setPixmap(D); // show gradient example

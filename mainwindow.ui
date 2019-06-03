@@ -318,7 +318,7 @@
       </rect>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;v1.4 : now you can export the 3D view to a .ply file to render it in other 3D tools like MeshLab or Blender&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;v1.4 : now you can export the 3D view to a .ply file to render it in other 3D tools like MeshLab or Blender + adapted to openCV 4.1&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="frameShape">
       <enum>QFrame::Box</enum>

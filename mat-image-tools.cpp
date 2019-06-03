@@ -99,7 +99,7 @@ Mat QPixmap2Mat(const QPixmap &source) // Convert Pixmap to Mat
 QImage Mat2QImage(const Mat &source) // convert BGR Mat to RGB QImage
 {
      Mat temp;
-     cvtColor(source, temp, CV_BGR2RGB); // convert Mat BGR to QImage RGB
+     cvtColor(source, temp, COLOR_BGR2RGB); // convert Mat BGR to QImage RGB
      QImage dest((const uchar *) temp.data, temp.cols, temp.rows, temp.step, QImage::Format_RGB888); // conversion
      dest.bits(); // enforce deep copy of QImage::QImage (const uchar * data, int width, int height, Format format)
 
@@ -221,7 +221,7 @@ Mat SimplestColorBalance(const Mat &source, const float &percent) // color balan
         // find low and high precentile values (based on input percentile)
         Mat flat;
         tmpsplit[i].reshape(1,1).copyTo(flat);
-        cv::sort(flat,flat,CV_SORT_EVERY_ROW + CV_SORT_ASCENDING);
+        cv::sort(flat,flat,SORT_EVERY_ROW + SORT_ASCENDING);
         int lowval = flat.at<uchar>(cvFloor(((float)flat.cols) * half_percent));
         int highval = flat.at<uchar>(cvCeil(((float)flat.cols) * (1.0 - half_percent)));
 
@@ -305,7 +305,7 @@ Mat ShiftFrame(const Mat &source, const int &nb_pixels, const shift_direction &d
 Mat CopyFromImage (Mat source, const Rect &frame) // copy part of an image
 {
     if (source.channels() == 1)
-        cvtColor(source, source, CV_GRAY2BGR);
+        cvtColor(source, source, COLOR_GRAY2BGR);
     return source(frame); // just use the Rect area
 }
 
