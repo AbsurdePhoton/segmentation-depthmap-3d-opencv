@@ -100,7 +100,7 @@ On the right is the 3D rendering view. There are many options to play with!
 
 * You can change the z scale with the Depth slider, to add more depth to your image. Try it with the anaglyph view in real-time!
 
-* Speaking of anaglyph view, you can activate it and change the shift factor, but beware of eyes strain, set it to your liking. You must wear red-blue googles to get the depth perception
+* Speaking of anaglyph view, you can activate it and change the shift factor, but beware of eyes strain, set it to your liking. You must wear red-cyan googles to get the depth perception
 
 * To help reduce bad effects in anaglyph mode like "ghosting", you can change the image's gamma, or use different color modes. The Dubois mode is the most optimized for red-cyan viewing, but it slightly changes the image's colors
 
