@@ -29,7 +29,7 @@ I used bits of code from several sources, mainly from the openCV and openGL exam
 
 I didn't find any simple tool (understand: GUI) to produce depth maps from unique pictures.
 
-One solution to help produce depth maps is image segmentation: coloring zones with superpixel cells is so easy! That's what was achieved with my superpixels-segmentation-gui-opencv tool, also available on GitHub. But it wasn't enough.
+One solution to help produce depth maps is image segmentation: coloring zones with superpixel cells is so easy! That's what was achieved with my [superpixels-segmentation-gui-opencv tool](https://github.com/AbsurdePhoton/superpixels-segmentation-gui-opencv), also available on GitHub. But it wasn't enough.
 
 The segmentation-depthmap-3d-opencv tool helps creating depthmaps directly, with a 3D visual help (even with real perception of depth in the anaglyph mode), by "coloring" in gray the segmented areas. There are several gradient modes available, to obtain better transitions between the areas.
 
@@ -56,7 +56,7 @@ This software should also work under Microsoft Windows: if you tried it successf
 ## HOW?
 
 * Help is available in the GUI, with each element's tooltip. Just stay your mouse over an element
-* to create a depthmap, you need a segmented image produced by my other tool, superpixels-segmentation-gui-opencv
+* to create a depthmap, you need a segmented image produced by my other tool, [superpixels-segmentation-gui-opencv](https://github.com/AbsurdePhoton/superpixels-segmentation-gui-opencv)
 * segmentation-depthmap-3d-opencv is composed of 3 main areas: segmentation/depthmap, gradients and 3D vizualisation
 * A 3-button mouse is all you need
 * Sample files are in the "example" folder : load the segmentation or depthmap XML file
@@ -65,7 +65,7 @@ This software should also work under Microsoft Windows: if you tried it successf
 
 ![Screenshot - Depthmap](screenshots/screenshot-depthmap.jpg?raw=true)
 
-* To begin, load a segmented image produced with superpixels-segmentation-gui-opencv, nothing is possible without it! The image appears in the main viewport and its thumbnail is shown on the left side. A basic depthmap is already available, but it is absolutely not reliable!
+* To begin, load a segmented image produced with [superpixels-segmentation-gui-opencv](https://github.com/AbsurdePhoton/superpixels-segmentation-gui-opencv), nothing is possible without it! The image appears in the main viewport and its thumbnail is shown on the left side. A basic depthmap is already available, but it is absolutely not reliable!
 
 * In the depthmap view, you can zoom with the mouse wheel or the zoom buttons at the bottom. To move the view, either use the left mouse button on the thumbnail view, or the right mouse button or spacebar to move the view when the image is zoomed-in
 
