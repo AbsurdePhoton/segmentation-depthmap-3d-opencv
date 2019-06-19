@@ -1472,13 +1472,13 @@ void MainWindow::on_checkBox_3d_capture_clicked() // launch 3D animation and sav
                 if (frm == 0) // compute current angles of view on x and y axes for each interval
                     xAngle = -middleX;
                 else if (frm < double(nb_frames) / 4) // 1st quarter
-                    xAngle = xSector * frm * 2 - middleX;
+                    xAngle = xSector * double(frm) * 2 - middleX;
                 else if (frm < double(nb_frames) / 2) // 2nd quarter
-                    xAngle = xSector * frm * 2 - middleX;
+                    xAngle = xSector * double(frm) * 2 - middleX;
                 else if (frm < double(nb_frames) * 3 / 4) // 3rd quarter
-                    xAngle = middleX - xSector * (frm - double(nb_frames) / 2) * 2;
+                    xAngle = middleX - xSector * (double(frm) - double(nb_frames) / 2) * 2;
                 else // 4th quarter
-                    xAngle = middleX - xSector * (frm - double(nb_frames) / 2) * 2;
+                    xAngle = middleX - xSector * (double(frm) - double(nb_frames) / 2) * 2;
             }
             if (ui->checkBox_3d_circular_horizontal->isChecked()) {
                 int frm;
@@ -1489,25 +1489,25 @@ void MainWindow::on_checkBox_3d_capture_clicked() // launch 3D animation and sav
                 if (frm == 0) // compute current angles of view on x and y axes for each interval
                     yAngle = 0;
                 else if (frm < double(nb_frames) / 4) // 1st quarter
-                    yAngle = ySector * frm * 2;
+                    yAngle = ySector * double(frm) * 2;
                 else if (frm < double(nb_frames) / 2) // 2nd quarter
-                    yAngle = middleY - ySector * (frm - double(nb_frames) / 4) * 2;
+                    yAngle = middleY - ySector * (double(frm) - double(nb_frames) / 4) * 2;
                 else if (frm < double(nb_frames) * 3 / 4) // 3rd quarter
-                    yAngle = middleY - ySector * (frm - double(nb_frames) / 4) * 2;
+                    yAngle = middleY - ySector * (double(frm) - double(nb_frames) / 4) * 2;
                 else // 4th quarter
-                    yAngle = ySector * (frm - double(nb_frames) * 3 / 4) * 2 - middleY;
+                    yAngle = ySector * (double(frm) - double(nb_frames) * 3 / 4) * 2 - middleY;
             }
             if (!ui->checkBox_3d_circular_vertical->isChecked()) { // vertical wobble
-                xAngle = xSector * frame - middleX; // compute angles
+                xAngle = xSector * double(frame) - middleX; // compute angles
                 if (frame < 0) // in double cycle mode angle is not the same for "negative" frames
-                    xAngle = -ui->spinBox_3d_x_angle->value() - xAngle;
+                    xAngle = double(-ui->spinBox_3d_x_angle->value()) - xAngle;
                 if (ui->checkBox_3d_double_cycle->isChecked()) // in double cycle mode invert angles
                     xAngle = -xAngle;
             }
             if (!ui->checkBox_3d_circular_horizontal->isChecked()) { // horizontal wobble
-                yAngle = ySector * frame - middleY;
+                yAngle = ySector * double(frame) - middleY;
                 if (frame < 0) // in double cycle mode angle is not the same for "negative" frames
-                    yAngle = -ui->spinBox_3d_y_angle->value() - yAngle;
+                    yAngle = double(-ui->spinBox_3d_y_angle->value()) - yAngle;
                 if (ui->checkBox_3d_double_cycle->isChecked()) // in double cycle mode invert angles
                     yAngle = -yAngle;
             }

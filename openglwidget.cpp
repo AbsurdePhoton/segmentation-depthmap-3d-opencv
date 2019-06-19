@@ -371,6 +371,8 @@ void openGLWidget::paintGL() // 3D rendering
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear color and depth buffers
 
+    if (anaglyphEnabled) glRotatef(-anaglyphShift, 0.0, 1.0, 0.0); // rotate a bit the first image on y axis
+
     glLoadIdentity(); // replace current matrix with identity matrix (reset)
 
     glTranslatef(xShift, yShift, 0); // translation matrix for all objects - no z used
@@ -464,7 +466,7 @@ void openGLWidget::paintGL() // 3D rendering
 
         glClear(GL_DEPTH_BUFFER_BIT); // only reset the depth not the colors this time
         //glTranslatef(anaglyphShift * 2048, 0, 0); // bad method !
-        glRotatef(2 * anaglyphShift, 0.0, 1.0, 0.0); // rotate a bit the second image on y axis
+        glRotatef(anaglyphShift, 0.0, 1.0, 0.0); // rotate a bit the second image on y axis
         glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA); // blend the right image with the already drawn left image
         glColorMask(GL_FALSE, GL_TRUE, GL_TRUE, GL_TRUE); // draw only in the cyan channels (blue + green)
 

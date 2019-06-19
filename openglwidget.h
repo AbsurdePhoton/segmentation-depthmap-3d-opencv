@@ -63,7 +63,7 @@ public:
     QVector<GLuint> indexarray; // vertex indexes
     QVector<QVector3D> colorarray; // vertex colors
 
-    int xRot, yRot, zRot; // rotation values
+    double xRot, yRot, zRot; // rotation values
     int xShift, yShift; // position values
     double angleLight; // x position
 
