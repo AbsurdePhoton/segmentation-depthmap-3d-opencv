@@ -100,7 +100,7 @@ void MainWindow::InitializeValues() // Global variables init
     zoom = 1; // init zoom
     oldZoom = 1; // to detect a zoom change
     zoom_type = ""; // not set now, can be "button" or (mouse) "wheel"
-    basedir = "/media/DataI5/Photos/Sabine/2018-03-09-Sabine-06-3D/MPO/Depthmap/Ajustées/Calcul/";
+    basedir = "/media/DataI5/Photos/Sabine/2018-03-09-Sabine-06-3D/Originales/";
     basefile = "example";
     nbLabels = 0; // no labels yet
     updateVertices3D = false; // not an update
@@ -306,20 +306,7 @@ void MainWindow::on_button_load_segmentation_clicked() // load segmentation XML 
 
     DeleteAllLabels(); // delete all labels in the list
 
-    cv::FileStorage fs; // try to read the XML file
-    try {
-        fs = cv::FileStorage(filesession + "-segmentation-data.xml", FileStorage::READ); // open labels file
-    }
-    catch( cv::Exception& e ) // problem ?
-    {
-        const char* err_msg = e.what(); // get error from openCV
-        QApplication::restoreOverrideCursor(); // Restore cursor
-        QMessageBox::critical(this, "XML Segmentation file error",
-                              "There was a problem reading the segmentation XML file.\nThe XML structure is wrong.\nError:\n"
-                              + QString(err_msg));
-        DisableGUI();
-        return;
-    }
+    cv::FileStorage fs(filesession + "-segmentation-data.xml", FileStorage::READ); // open labels file
 
     if (!fs.isOpened()) { // file not found ? this error is not handled by the above instructions
         QApplication::restoreOverrideCursor(); // Restore cursor
@@ -615,20 +602,7 @@ void MainWindow::on_button_load_depthmap_clicked() // load depthmap XML file
 
     DeleteAllLabels(); // delete all labels in the list
 
-    cv::FileStorage fs;
-    try { // try to read XML file
-        fs = cv::FileStorage(filesession + "-depthmap-data.xml", FileStorage::READ); // open labels file
-    }
-    catch( cv::Exception& e ) // problem ?
-    {
-        const char* err_msg = e.what(); // get error from openCV
-        QApplication::restoreOverrideCursor(); // Restore cursor
-        QMessageBox::critical(this, "XML Depthmap file error",
-                              "There was a problem reading the depthmap XML file.\nThe XML structure is wrong.\nError:\n"
-                              + QString(err_msg));
-        DisableGUI();
-        return;
-    }
+    cv::FileStorage fs(filesession + "-depthmap-data.xml", FileStorage::READ); // open labels file
 
     if (!fs.isOpened()) { // file not opened, not handled by above instructions
         QApplication::restoreOverrideCursor(); // Restore cursor
