@@ -283,20 +283,25 @@ void MainWindow::on_button_load_segmentation_clicked() // load segmentation XML 
     if (depthmap.empty()) { // mask empty, not good !
         QApplication::restoreOverrideCursor(); // Restore cursor
         QMessageBox::critical(this, "File error",
-                              "There was a problem reading the segmentation mask file:\nit must end with ''-segmentation-depthmap.png''");
+                              "There was a problem reading the segmentation mask file:\nit must end with ''-segmentation-mask.png''");
         DisableGUI(); // problem : reset GUI elements and exit
         return;
     }
 
     image = cv::imread(filesession + "-segmentation-image.png"); // load reference image
 
-    if ((image.empty()) | (image.cols != depthmap.cols) | (image.rows != depthmap.rows)) { // image empty or image and mask sizes not the same -> not good !
+    if (image.empty()) {
         QApplication::restoreOverrideCursor(); // Restore cursor
-        if ((image.cols != depthmap.cols) | (image.rows != depthmap.rows)) // image and mask not same sizes
-            QMessageBox::critical(this, "Image size error",
-                                        "The image and mask image size (width and height) differ");
-        else QMessageBox::critical(this, "File error",
-                              "There was a problem reading the segmentation image file:\nit must end with ''-segmentation-image.png''");
+        QMessageBox::critical(this, "File error",
+                                      "There was a problem reading the segmentation image file:\nit must end with ''-segmentation-image.png''");
+        DisableGUI();
+        return;
+    }
+
+    if ((image.cols != depthmap.cols) | (image.rows != depthmap.rows)) { // image and mask sizes not the same -> not good !
+        QApplication::restoreOverrideCursor(); // Restore cursor
+        QMessageBox::critical(this, "Image size error",
+                                    "The image and mask image size (width and height) differ");
         DisableGUI();
         return;
     }
@@ -587,13 +592,18 @@ void MainWindow::on_button_load_depthmap_clicked() // load depthmap XML file
 
     image = cv::imread(filesession + "-depthmap-image.png"); // load reference image
 
-    if ((image.empty()) | (image.cols != depthmap.cols) | (image.rows != depthmap.rows)) { // image and depthmap size differ or image is empty
+    if (image.empty()) {
         QApplication::restoreOverrideCursor(); // Restore cursor
-        if ((image.cols != depthmap.cols) | (image.rows != depthmap.rows)) // sizes differ
-            QMessageBox::critical(this, "Image size error",
-                                        "The image and depthmap size (width and height) differ");
-        else QMessageBox::critical(this, "File error",
-                              "There was a problem reading the depthmap image file:\nit must end with ''-depthmap-image.png''");
+        QMessageBox::critical(this, "File error",
+                                    "There was a problem reading the depthmap image file:\nit must end with ''-depthmap-image.png''");
+        DisableGUI();
+        return;
+    }
+
+    if ((image.cols != depthmap.cols) | (image.rows != depthmap.rows)) { // image and mask sizes not the same -> not good !
+        QApplication::restoreOverrideCursor(); // Restore cursor
+        QMessageBox::critical(this, "Image size error",
+                                    "The image and mask image size (width and height) differ");
         DisableGUI();
         return;
     }
