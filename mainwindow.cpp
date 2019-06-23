@@ -1992,6 +1992,4 @@ void MainWindow::ChangeLabelGradient() // update depthmap mask with gradient
     ui->openGLWidget_3d->depthmap3D = depthmap;
     updateVertices3D = true;
     Render(); // update view
-
-    ui->checkBox_3d_blur->setChecked(false);
 }
