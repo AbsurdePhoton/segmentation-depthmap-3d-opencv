@@ -56,6 +56,8 @@ private slots:
     void on_listWidget_labels_currentItemChanged(QListWidgetItem *currentItem); // show current label color when item change
 
     //// load & save
+    void SaveDirBaseFile(); // just to keep the last open dir
+
     void DisableGUI();
     void on_button_save_depthmap_clicked(); // save session files
     void on_button_load_depthmap_clicked(); // load session files
@@ -170,7 +172,7 @@ private:
     cv::Mat disp_color; // Processed image display with mask and depthmap
     cv::Rect viewport; // part of the segmentation image to display
 
-    std::string basefile, basedir; // main image filename: directory and filename without extension
+    std::string basefile, basedir, basedirinifile; // main image filename: directory and filename without extension
 
     Qt::MouseButton mouseButton; // save mouse button value when holding down a mouse button
     QPoint mouse_origin; // save the mouse position when holding down a mouse button

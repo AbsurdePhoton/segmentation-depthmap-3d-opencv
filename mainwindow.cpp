@@ -100,7 +100,14 @@ void MainWindow::InitializeValues() // Global variables init
     zoom = 1; // init zoom
     oldZoom = 1; // to detect a zoom change
     zoom_type = ""; // not set now, can be "button" or (mouse) "wheel"
-    basedir = "/media/DataI5/Photos/Sabine/2018-03-09-Sabine-06-3D/Originales/";
+
+    basedirinifile = QDir::currentPath().toUtf8().constData();
+    basedirinifile += "/dir.ini";
+    cv::FileStorage fs(basedirinifile, FileStorage::READ); // open dir ini file
+    if (fs.isOpened()) {
+        fs["BaseDir"] >> basedir; // load labels
+    }
+        else basedir = "/home/"; // base path and file
     basefile = "example";
     nbLabels = 0; // no labels yet
     updateVertices3D = false; // not an update
@@ -229,6 +236,13 @@ void MainWindow::on_listWidget_labels_currentItemChanged(QListWidgetItem *curren
 
 /////////////////// Save and load //////////////////////
 
+void MainWindow::SaveDirBaseFile()
+{
+    cv::FileStorage fs(basedirinifile, cv::FileStorage::WRITE); // open labels file for writing
+    fs << "BaseDir" << basedir; // write labels count
+    fs.release(); // close file
+}
+
 void MainWindow::DisableGUI() // reset entire GUI - used when something goes wrong when loading files
 {
     loaded = false;
@@ -262,6 +276,8 @@ void MainWindow::on_button_load_segmentation_clicked() // load segmentation XML 
     size_t found = basefile.find_last_of("/"); // find last directory
     basedir = basedir.substr(0,found) + "/"; // extract file location
     basefile = basefile.substr(found+1); // delete ending slash
+    SaveDirBaseFile(); // Save current path to ini file
+
     size_t pos = basefile.find("-segmentation-data"); // the XML file must end with this
     if (pos != std::string::npos) // yes !
         basefile.erase(pos, basefile.length());
@@ -561,6 +577,8 @@ void MainWindow::on_button_load_depthmap_clicked() // load depthmap XML file
     basedir = basefile;
     size_t found = basefile.find_last_of("/"); // find last directory
     basedir = basedir.substr(0,found) + "/"; // extract file location
+    SaveDirBaseFile(); // Save current path to ini file
+
     basefile = basefile.substr(found+1); // delete ending slash
     size_t pos = basefile.find("-depthmap-data");
     if (pos != std::string::npos)
@@ -766,6 +784,8 @@ void MainWindow::on_button_load_rgbd_clicked() // load previous session
     basedir = basefile;
     size_t found = basefile.find_last_of("/"); // find last directory
     basedir = basedir.substr(0,found) + "/"; // extract file location
+    SaveDirBaseFile(); // Save current path to ini file
+
     basefile = basefile.substr(found+1); // delete ending slash
     ui->label_filename->setText(filename); // display file name in ui
 
