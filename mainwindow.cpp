@@ -185,10 +185,14 @@ void MainWindow::on_listWidget_labels_currentItemChanged(QListWidgetItem *curren
     selection_rect = boundingRect(contours[0]); // find biggest rectangle
     for (uint n = 1; n < contours.size(); n++) { // ... by cycling through all found contours
         Rect rect_temp = boundingRect(contours[n]); // current Rect
-        if (rect_temp.x < selection_rect.x) // adjust size
+        if (rect_temp.x < selection_rect.x) { // adjust size
+            selection_rect.width += selection_rect.x - rect_temp.x;
             selection_rect.x = rect_temp.x;
-        if (rect_temp.y < selection_rect.y)
+        }
+        if (rect_temp.y < selection_rect.y) {
+            selection_rect.height += selection_rect.y - rect_temp.y;
             selection_rect.y = rect_temp.y;
+        }
         if (rect_temp.x + rect_temp.width > selection_rect.x + selection_rect.width)
             selection_rect.width = rect_temp.x + rect_temp.width - selection_rect.x;
         if (rect_temp.y + rect_temp.height > selection_rect.y + selection_rect.height)
@@ -198,6 +202,8 @@ void MainWindow::on_listWidget_labels_currentItemChanged(QListWidgetItem *curren
     ui->openGLWidget_3d->mask3D = currentLabelMask;
 
     drawContours(selection, contours, -1, Vec3b(0, 255, 255), 1, 8, hierarchy ); // draw contour of new cell in selection mask
+    /*cv::rectangle(selection, Rect(selection_rect.x, selection_rect.y, selection_rect.width, selection_rect.height),
+                          Vec3b(255, 255, 255), 2); // draw entire selection rectangle*/
 
     BlockGradientsSignals(true); // don't trigger automatic actions for these widgets
 
@@ -1909,6 +1915,7 @@ void MainWindow::Render() // show masks for image + depthmap + selection
         selection.copyTo(selection_temp); // make a copy of selection mask
 
         int row = ui->listWidget_labels->currentRow(); // get current label row in list
+
         // draw end point : a blue tiny rectangle crossed by diagonals
         int size;
         if (zoom < 1)
