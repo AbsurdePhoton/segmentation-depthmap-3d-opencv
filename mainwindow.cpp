@@ -277,14 +277,15 @@ void MainWindow::on_button_load_segmentation_clicked() // load segmentation XML 
     qApp->processEvents();
 
     basefile = filename.toUtf8().constData(); // base file name and dir are used after to save other files
-    basefile = basefile.substr(0, basefile.size()-4); // strip file extension
+    size_t pos = basefile.find(".xml");
+    if (pos != std::string::npos) basefile.erase(pos, basefile.length());
     basedir = basefile;
     size_t found = basefile.find_last_of("/"); // find last directory
     basedir = basedir.substr(0,found) + "/"; // extract file location
     basefile = basefile.substr(found+1); // delete ending slash
     SaveDirBaseFile(); // Save current path to ini file
 
-    size_t pos = basefile.find("-segmentation-data"); // the XML file must end with this
+    pos = basefile.find("-segmentation-data"); // the XML file must end with this
     if (pos != std::string::npos) // yes !
         basefile.erase(pos, basefile.length());
     else { // doesn't end with "-segmentation-data"
@@ -477,25 +478,22 @@ void MainWindow::on_button_save_depthmap_clicked() // save XML and image depthma
 
     // base file name and dir can change so reset them
     basefile = filename.toUtf8().constData(); // base file name and dir are used after to save other files
-    basefile = basefile.substr(0, basefile.size()-4); // strip file extension
+    size_t pos = basefile.find(".xml");
+    if (pos != std::string::npos) basefile.erase(pos, basefile.length());
     basedir = basefile;
     size_t found = basefile.find_last_of("/"); // find last directory
     basedir = basedir.substr(0,found) + "/"; // extract file location
     basefile = basefile.substr(found+1); // delete ending slash
-    size_t pos = basefile.find("-depthmap-data"); // the XML file must end with this
-    if (pos != std::string::npos) // yes
-        basefile.erase(pos, basefile.length());
-    else { // doesn't end with "-depthmap-data"
-        QApplication::restoreOverrideCursor(); // Restore cursor
-        QMessageBox::critical(this, "File name error",
-                              "There was a problem with the depthmap file name:\nit must end with ''-depthmap-data.xml''");
-        return;
-    }
+    pos = basefile.find("-depthmap-data");
+    if (pos != std::string::npos) basefile.erase(pos, basefile.length());
+    SaveDirBaseFile(); // Save current path to ini file
 
     ui->label_filename->setText(filename); // display file name in GUI
 
     std::string filesession = filename.toUtf8().constData();
     pos = filesession.find("-depthmap-data.xml"); // use base file name
+    if (pos != std::string::npos) filesession.erase(pos, filesession.length());
+    pos = filesession.find(".xml"); // use base file name
     if (pos != std::string::npos) filesession.erase(pos, filesession.length());
 
     bool write;
@@ -565,7 +563,7 @@ void MainWindow::on_button_save_depthmap_clicked() // save XML and image depthma
 
     QApplication::restoreOverrideCursor(); // Restore cursor
 
-    QMessageBox::information(this, "Save depthmap session", "Session successfuly saved with base name:\n" + QString::fromStdString(filesession));
+    QMessageBox::information(this, "Save depthmap session", "Session successfuly saved with base name:\n" + QString::fromStdString(basefile));
 }
 
 void MainWindow::on_button_load_depthmap_clicked() // load depthmap XML file
@@ -579,14 +577,15 @@ void MainWindow::on_button_load_depthmap_clicked() // load depthmap XML file
     qApp->processEvents();
 
     basefile = filename.toUtf8().constData(); // base file name and dir are used after to save other files
-    basefile = basefile.substr(0, basefile.size()-4); // strip file extension
+    size_t pos = basefile.find(".xml");
+    if (pos != std::string::npos) basefile.erase(pos, basefile.length());
     basedir = basefile;
     size_t found = basefile.find_last_of("/"); // find last directory
     basedir = basedir.substr(0,found) + "/"; // extract file location
     SaveDirBaseFile(); // Save current path to ini file
 
     basefile = basefile.substr(found+1); // delete ending slash
-    size_t pos = basefile.find("-depthmap-data");
+    pos = basefile.find("-depthmap-data");
     if (pos != std::string::npos)
         basefile.erase(pos, basefile.length());
     else { // doesn't end with "-depthmap-data"
