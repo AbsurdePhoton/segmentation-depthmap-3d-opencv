@@ -25,6 +25,10 @@
   <property name="windowTitle">
    <string>Segmentation to Depthmap to 3D with OpenCV by AbsurdePhoton</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="resources.qrc">
+    <normaloff>:/icons/anaglyph.png</normaloff>:/icons/anaglyph.png</iconset>
+  </property>
   <widget class="QWidget" name="centralWidget">
    <property name="minimumSize">
     <size>

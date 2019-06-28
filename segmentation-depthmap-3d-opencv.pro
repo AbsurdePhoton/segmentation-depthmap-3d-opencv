@@ -15,6 +15,8 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = segmentation-depthmap-3d-opencv
 TEMPLATE = app
 
+INCLUDEPATH += /usr/local/include/opencv2
+
 LIBS += -L/usr/local/lib -lopencv_core -lopencv_imgcodecs -lopencv_highgui
 
 SOURCES +=  main.cpp\
