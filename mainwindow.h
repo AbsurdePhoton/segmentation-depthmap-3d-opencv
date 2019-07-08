@@ -4,7 +4,7 @@
 #
 #    by AbsurdePhoton - www.absurdephoton.fr
 #
-#                v1.4 - 2019/05/10
+#                v1.5 - 2019/07/08
 #
 #-------------------------------------------------*/
 
@@ -25,10 +25,6 @@
 #include <QListWidgetItem>
 
 #include "mat-image-tools.h"
-
-using namespace cv;
-using namespace cv::ximgproc;
-using namespace std;
 
 namespace Ui {
 class MainWindow;
@@ -56,6 +52,7 @@ private slots:
     void on_listWidget_labels_currentItemChanged(QListWidgetItem *currentItem); // show current label color when item change
 
     //// load & save
+    void ChangeBaseDir(QString filename); // Set base dir and file
     void SaveDirBaseFile(); // just to keep the last open dir
 
     void DisableGUI();
@@ -154,10 +151,6 @@ private:
     // the UI object, to access the UI elements created with Qt Designer
     Ui::MainWindow *ui;
 
-    Ptr<SuperpixelSLIC> slic; // SLIC Segmentation pointer
-    Ptr<SuperpixelLSC> lsc; // LSC Segmentation pointer
-    Ptr<SuperpixelSEEDS> seeds; // SEEDS Segmentation pointer
-
     cv::Mat labels; // Segmentation cells and labels
     int nbLabels; // max number of labels
 
@@ -167,7 +160,7 @@ private:
             selection, // selection mask
             currentLabelMask; // for 3D partial update
 
-    Rect selection_rect; // rectangle of current selection
+    cv::Rect selection_rect; // rectangle of current selection
 
     cv::Mat disp_color; // Processed image display with mask and depthmap
     cv::Rect viewport; // part of the segmentation image to display

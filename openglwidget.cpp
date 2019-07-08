@@ -4,7 +4,7 @@
 #
 #    by AbsurdePhoton - www.absurdephoton.fr
 #
-#               v1.4 - 2019/05/10
+#               v1.5 - 2019/07/08
 #
 # * .ply mesh export
 #

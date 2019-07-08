@@ -4,7 +4,7 @@
 #
 #    by AbsurdePhoton - www.absurdephoton.fr
 #
-#                v1.4 - 2019/05/10
+#                v1.5 - 2019/07/08
 #
 #-------------------------------------------------*/
 
@@ -23,6 +23,9 @@
 #include "mat-image-tools.h"
 #include "dispersion3D.h"
 
+using namespace cv;
+using namespace cv::ximgproc;
+using namespace std;
 
 /////////////////// Window init //////////////////////
 
@@ -249,6 +252,24 @@ void MainWindow::SaveDirBaseFile()
     fs.release(); // close file
 }
 
+void MainWindow::ChangeBaseDir(QString filename) // Set base dir and file
+{
+    basefile = filename.toUtf8().constData(); // base file name and dir are used after to save other files
+
+    // Remove extension if present
+    size_t period_idx = basefile.rfind('.');
+    if (std::string::npos != period_idx)
+        basefile.erase(period_idx);
+
+    basedir = basefile;
+    size_t found = basefile.find_last_of("\\/"); // find last directory
+    std::string separator = basefile.substr(found,1); // copy path separator (Linux <> Windows)
+    basedir = basedir.substr(0,found) + separator; // define base path
+    basefile = basefile.substr(found+1); // delete path in base file
+
+    SaveDirBaseFile(); // Save current path to ini file
+}
+
 void MainWindow::DisableGUI() // reset entire GUI - used when something goes wrong when loading files
 {
     loaded = false;
@@ -264,6 +285,8 @@ void MainWindow::DisableGUI() // reset entire GUI - used when something goes wro
     ui->openGLWidget_3d->computeColors3D = true;
     ui->openGLWidget_3d->update();
     DeleteAllLabels(); // delete all labels but do not create a new one
+    ui->label_filename->setText("Please load a file"); // delete file name in ui
+    QApplication::restoreOverrideCursor(); // Restore cursor
 }
 
 void MainWindow::on_button_load_segmentation_clicked() // load segmentation XML file and corresponding image files
@@ -276,20 +299,20 @@ void MainWindow::on_button_load_segmentation_clicked() // load segmentation XML 
     QApplication::setOverrideCursor(Qt::WaitCursor); // wait cursor
     qApp->processEvents();
 
-    basefile = filename.toUtf8().constData(); // base file name and dir are used after to save other files
+    /*basefile = filename.toUtf8().constData(); // base file name and dir are used after to save other files
     size_t pos = basefile.find(".xml");
     if (pos != std::string::npos) basefile.erase(pos, basefile.length());
     basedir = basefile;
     size_t found = basefile.find_last_of("/"); // find last directory
     basedir = basedir.substr(0,found) + "/"; // extract file location
     basefile = basefile.substr(found+1); // delete ending slash
-    SaveDirBaseFile(); // Save current path to ini file
+    SaveDirBaseFile(); // Save current path to ini file*/
+    ChangeBaseDir(filename);
 
-    pos = basefile.find("-segmentation-data"); // the XML file must end with this
+    size_t pos = basefile.find("-segmentation-data"); // the XML file must end with this
     if (pos != std::string::npos) // yes !
         basefile.erase(pos, basefile.length());
     else { // doesn't end with "-segmentation-data"
-        QApplication::restoreOverrideCursor(); // Restore cursor
         QMessageBox::critical(this, "File name error",
                               "There was a problem reading the segmentation mask file:\nit must end with ''-segmentation-data.xml''");
         DisableGUI(); // problem : reset GUI elements and exit
@@ -304,7 +327,6 @@ void MainWindow::on_button_load_segmentation_clicked() // load segmentation XML 
 
     depthmap = cv::imread(filesession + "-segmentation-mask.png", IMREAD_COLOR); // load segmentation mask
     if (depthmap.empty()) { // mask empty, not good !
-        QApplication::restoreOverrideCursor(); // Restore cursor
         QMessageBox::critical(this, "File error",
                               "There was a problem reading the segmentation mask file:\nit must end with ''-segmentation-mask.png''");
         DisableGUI(); // problem : reset GUI elements and exit
@@ -314,7 +336,6 @@ void MainWindow::on_button_load_segmentation_clicked() // load segmentation XML 
     image = cv::imread(filesession + "-segmentation-image.png"); // load reference image
 
     if (image.empty()) {
-        QApplication::restoreOverrideCursor(); // Restore cursor
         QMessageBox::critical(this, "File error",
                                       "There was a problem reading the segmentation image file:\nit must end with ''-segmentation-image.png''");
         DisableGUI();
@@ -322,7 +343,6 @@ void MainWindow::on_button_load_segmentation_clicked() // load segmentation XML 
     }
 
     if ((image.cols != depthmap.cols) | (image.rows != depthmap.rows)) { // image and mask sizes not the same -> not good !
-        QApplication::restoreOverrideCursor(); // Restore cursor
         QMessageBox::critical(this, "Image size error",
                                     "The image and mask image size (width and height) differ");
         DisableGUI();
@@ -337,7 +357,6 @@ void MainWindow::on_button_load_segmentation_clicked() // load segmentation XML 
     cv::FileStorage fs(filesession + "-segmentation-data.xml", FileStorage::READ); // open labels file
 
     if (!fs.isOpened()) { // file not found ? this error is not handled by the above instructions
-        QApplication::restoreOverrideCursor(); // Restore cursor
         QMessageBox::critical(this, "File error",
                               "There was a problem reading the segmentation data file:\nit must end with ''-segmentation-data.xml''");
         DisableGUI();
@@ -351,7 +370,6 @@ void MainWindow::on_button_load_segmentation_clicked() // load segmentation XML 
     catch( cv::Exception& e ) // problem ?
     {
         const char* err_msg = e.what();
-        QApplication::restoreOverrideCursor(); // Restore cursor
         QMessageBox::critical(this, "XML Segmentation file error",
                               "There was a problem reading the segmentation XML file\nThe \"LabelsMask\" data is wrong\nError:\n"
                               + QString(err_msg));
@@ -363,7 +381,6 @@ void MainWindow::on_button_load_segmentation_clicked() // load segmentation XML 
     fs["LabelsCount"] >> nbLabels; // read how many labels to load
 
     if (nbLabels <= 0) { // no labels ?
-        QApplication::restoreOverrideCursor(); // Restore cursor
         QMessageBox::critical(this, "XML Segmentation file error",
                               "There was a problem reading the segmentation XML file\nThe data is wrong");
         DisableGUI();
@@ -476,19 +493,17 @@ void MainWindow::on_button_save_depthmap_clicked() // save XML and image depthma
     QApplication::setOverrideCursor(Qt::WaitCursor); // wait cursor
     qApp->processEvents();
 
-    // base file name and dir can change so reset them
+    /*// base file name and dir can change so reset them
     basefile = filename.toUtf8().constData(); // base file name and dir are used after to save other files
     size_t pos = basefile.find(".xml");
     if (pos != std::string::npos) basefile.erase(pos, basefile.length());
     basedir = basefile;
     size_t found = basefile.find_last_of("/"); // find last directory
     basedir = basedir.substr(0,found) + "/"; // extract file location
-    basefile = basefile.substr(found+1); // delete ending slash
-    pos = basefile.find("-depthmap-data");
+    basefile = basefile.substr(found+1); // delete ending slash*/
+    ChangeBaseDir(filename);
+    size_t pos = basefile.find("-depthmap-data");
     if (pos != std::string::npos) basefile.erase(pos, basefile.length());
-    SaveDirBaseFile(); // Save current path to ini file
-
-    ui->label_filename->setText(filename); // display file name in GUI
 
     std::string filesession = filename.toUtf8().constData();
     pos = filesession.find("-depthmap-data.xml"); // use base file name
@@ -559,7 +574,7 @@ void MainWindow::on_button_save_depthmap_clicked() // save XML and image depthma
 
     fs.release(); // close file
 
-    ui->label_filename->setText(filename); // display new file name in ui
+    ui->label_filename->setText(QString::fromStdString(filesession + "-depthmap-data.xml")); // display new file name in ui
 
     QApplication::restoreOverrideCursor(); // Restore cursor
 
@@ -576,7 +591,7 @@ void MainWindow::on_button_load_depthmap_clicked() // load depthmap XML file
     QApplication::setOverrideCursor(Qt::WaitCursor); // wait cursor
     qApp->processEvents();
 
-    basefile = filename.toUtf8().constData(); // base file name and dir are used after to save other files
+    /*basefile = filename.toUtf8().constData(); // base file name and dir are used after to save other files
     size_t pos = basefile.find(".xml");
     if (pos != std::string::npos) basefile.erase(pos, basefile.length());
     basedir = basefile;
@@ -584,19 +599,17 @@ void MainWindow::on_button_load_depthmap_clicked() // load depthmap XML file
     basedir = basedir.substr(0,found) + "/"; // extract file location
     SaveDirBaseFile(); // Save current path to ini file
 
-    basefile = basefile.substr(found+1); // delete ending slash
-    pos = basefile.find("-depthmap-data");
+    basefile = basefile.substr(found+1); // delete ending slash*/
+    ChangeBaseDir(filename);
+    size_t pos = basefile.find("-depthmap-data");
     if (pos != std::string::npos)
         basefile.erase(pos, basefile.length());
     else { // doesn't end with "-depthmap-data"
-        QApplication::restoreOverrideCursor(); // Restore cursor
         QMessageBox::critical(this, "File name error",
                               "There was a problem reading the depthmap file:\nit must end with ''-depthmap-data.xml''");
         DisableGUI(); // problem : reset GUI elements and exit
         return;
     }
-
-    ui->label_filename->setText(filename); // display file name in ui
 
     std::string filesession = filename.toUtf8().constData(); // base file name
     pos = filesession.find("-depthmap-data.xml"); // ends with "depthmap-data.xml"
@@ -606,7 +619,6 @@ void MainWindow::on_button_load_depthmap_clicked() // load depthmap XML file
     if (depthmap.channels() > 1)
         cvtColor(depthmap, depthmap, COLOR_BGR2GRAY);
     if (depthmap.empty()) { // problem ?
-        QApplication::restoreOverrideCursor(); // Restore cursor
         QMessageBox::critical(this, "File error",
                               "There was a problem reading the depthmap mask file:\nit must end with ''-depthmap-mask.png''");
         DisableGUI();
@@ -616,7 +628,6 @@ void MainWindow::on_button_load_depthmap_clicked() // load depthmap XML file
     image = cv::imread(filesession + "-depthmap-image.png"); // load reference image
 
     if (image.empty()) {
-        QApplication::restoreOverrideCursor(); // Restore cursor
         QMessageBox::critical(this, "File error",
                                     "There was a problem reading the depthmap image file:\nit must end with ''-depthmap-image.png''");
         DisableGUI();
@@ -624,7 +635,6 @@ void MainWindow::on_button_load_depthmap_clicked() // load depthmap XML file
     }
 
     if ((image.cols != depthmap.cols) | (image.rows != depthmap.rows)) { // image and mask sizes not the same -> not good !
-        QApplication::restoreOverrideCursor(); // Restore cursor
         QMessageBox::critical(this, "Image size error",
                                     "The image and mask image size (width and height) differ");
         DisableGUI();
@@ -638,7 +648,6 @@ void MainWindow::on_button_load_depthmap_clicked() // load depthmap XML file
     cv::FileStorage fs(filesession + "-depthmap-data.xml", FileStorage::READ); // open labels file
 
     if (!fs.isOpened()) { // file not opened, not handled by above instructions
-        QApplication::restoreOverrideCursor(); // Restore cursor
         QMessageBox::critical(this, "File error",
                               "There was a problem reading the depthmap data file:\nit must end with ''-depthmap-data.xml''");
         DisableGUI();
@@ -652,7 +661,6 @@ void MainWindow::on_button_load_depthmap_clicked() // load depthmap XML file
     catch( cv::Exception& e ) // problem ?
     {
         const char* err_msg = e.what(); // get error from openCV
-        QApplication::restoreOverrideCursor(); // Restore cursor
         QMessageBox::critical(this, "XML Depthmap file error",
                               "There was a problem reading the depthmap XML file\nThe \"Labels\" data is wrong\nError:\n"
                               + QString(err_msg));
@@ -666,7 +674,6 @@ void MainWindow::on_button_load_depthmap_clicked() // load depthmap XML file
     fs["LabelsCount"] >> nbLabels; // read how many labels to load ?
 
     if (nbLabels <= 0) { // no labels ?
-        QApplication::restoreOverrideCursor(); // Restore cursor
         QMessageBox::critical(this, "XML Depthmap file error",
                               "There was a problem reading the depthmap XML file\nThe data is wrong");
         DisableGUI();
@@ -728,6 +735,8 @@ void MainWindow::on_button_load_depthmap_clicked() // load depthmap XML file
 
     loaded = true; // all good !
 
+    ui->label_filename->setText(filename); // display file name in ui
+
     ui->label_thumbnail->setPixmap(QPixmap());
     ui->label_viewport->setPixmap(QPixmap()); // delete depthmap image
 
@@ -784,7 +793,7 @@ void MainWindow::on_button_load_rgbd_clicked() // load previous session
     QApplication::setOverrideCursor(Qt::WaitCursor); // wait cursor
     qApp->processEvents();
 
-    basefile = filename.toUtf8().constData(); // base file name and dir are used after to save other files
+    /*basefile = filename.toUtf8().constData(); // base file name and dir are used after to save other files
     basefile = basefile.substr(0, basefile.size()-4); // strip file extension
     basedir = basefile;
     size_t found = basefile.find_last_of("/"); // find last directory
@@ -792,7 +801,8 @@ void MainWindow::on_button_load_rgbd_clicked() // load previous session
     SaveDirBaseFile(); // Save current path to ini file
 
     basefile = basefile.substr(found+1); // delete ending slash
-    ui->label_filename->setText(filename); // display file name in ui
+    ui->label_filename->setText(filename); // display file name in ui*/
+    ChangeBaseDir(filename);
 
     std::string filesession = filename.toUtf8().constData(); // base file name
     image = cv::imread(filesession); // load image
@@ -804,6 +814,7 @@ void MainWindow::on_button_load_rgbd_clicked() // load previous session
 
     filename = QFileDialog::getOpenFileName(this, "Load RGB+D : depthmap...", QString::fromStdString(basedir),
                                             "Images (*.jpg *.JPG *.jpeg *.JPEG *.jp2 *.JP2 *.png *.PNG *.tif *.TIF *.tiff *.TIFF *.bmp *.BMP)"); // depthmap file name
+    ChangeBaseDir(filename);
     filesession = filename.toUtf8().constData(); // base file name
 
     depthmap = cv::imread(filesession, IMREAD_COLOR); // load depthmap
@@ -826,6 +837,8 @@ void MainWindow::on_button_load_rgbd_clicked() // load previous session
     DeleteAllLabels(); // delete all labels but do not create a new one
 
     loaded = true; // loaded successfully !
+
+    ui->label_filename->setText(filename); // display file name in ui
 
     ui->label_thumbnail->setPixmap(QPixmap()); // reinit several GUI elements
     ui->label_viewport->setPixmap(QPixmap());
@@ -887,12 +900,6 @@ void MainWindow::on_button_save_ply_clicked() // save XML and image depthmap fil
 
     if (filename.isNull() || filename.isEmpty()) // cancel ?
         return;
-
-    basefile = filename.toUtf8().constData(); // base file name and dir are used after to save other files
-    basefile = basefile.substr(0, basefile.size()-4); // strip file extension
-    basedir = basefile;
-    size_t found = basefile.find_last_of("/"); // find last directory
-    basedir = basedir.substr(0,found) + "/"; // extract file location
 
     QApplication::setOverrideCursor(Qt::WaitCursor); // wait cursor
     qApp->processEvents();

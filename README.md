@@ -1,6 +1,6 @@
 # segmentation-depthmap-3d-opencv
 ## Use an image segmentation to produce a RGB+D image (image + depthmap). Or use the GUI to view already-made RGB+D images in 3D, there's even an anaglyph mode to perceive depth with red+cyan googles. Animate the 3D view and export to a series of images to build later an animated image. This nice GUI uses QT, OpenCV and OpenGL.
-### v1.4 - 2019-05-10
+### v1.5 - 2019-07-08
 
 ![Screenshot - Global](screenshots/screenshot-gui.jpg?raw=true)
 <br/>
@@ -12,7 +12,8 @@
 * v1.1: created a formula-based system to draw gray gradients -> best control of transitions between the segmented areas and volume/depth in 3D
 * v1.2: hard work to understand how OpenGL works, applied it to obtain a real-time view of RGB+D combination - 3D animation and capture to PNG images - Anaglyph view
 * v1.3: successive optimizations of OpenGL viewing, at last about ten times faster than the first version - Many, many optimizations - several color renderings added to help reduce anaglyph discomforts like ghosting
-* v1.4: Interoperability achieved with .ply 3D mesh export for use in other 3D tools like MeshLab or Blender + adapted to openCV 4.1
+* v1.4: interoperability achieved with .ply 3D mesh export for use in other 3D tools like MeshLab or Blender + adapted to openCV 4.1
+* v1.5: code clean-up and fixes
 <br/>
 <br/>
 

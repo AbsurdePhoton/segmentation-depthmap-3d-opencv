@@ -4,7 +4,7 @@
 #
 #    by AbsurdePhoton - www.absurdephoton.fr
 #
-#               v1.4 - 2019/05/10
+#               v1.5 - 2019/07/08
 #
 # * .ply mesh export
 #
@@ -36,8 +36,6 @@
 #include <QOpenGLTexture>
 #include "opencv2/opencv.hpp"
 
-using namespace cv;
-
 class openGLWidget : public QOpenGLWidget
 {
     Q_OBJECT
@@ -67,10 +65,10 @@ public:
     int xShift, yShift; // position values
     double angleLight; // x position
 
-    Mat image3D; // reference image
-    Mat depthmap3D; // depthmap image
-    Mat mask3D; // mask for partial update
-    Rect area3D; // used for partial update
+    cv::Mat image3D; // reference image
+    cv::Mat depthmap3D; // depthmap image
+    cv::Mat mask3D; // mask for partial update
+    cv::Rect area3D; // used for partial update
 
     double zoom3D; // zoom coefficient
     double depth3D; // used for depthmap rendering

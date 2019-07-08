@@ -3,7 +3,7 @@
  * OpenCV image tools library
  * Author: AbsurdePhoton
  *
- * v1.8 - 2018/10/21
+ * v1.9 - 2019/07/08
  *
  * Convert mat images to QPixmap or QImage and vice-versa
  * Brightness, Contrast, Gamma, Equalize, Color Balance
@@ -23,8 +23,6 @@
 #include "opencv2/opencv.hpp"
 #include <opencv2/ximgproc.hpp>
 
-using namespace cv;
-
 const double Pi = atan(1)*4;
 enum shift_direction{shift_up=1, shift_right, shift_down, shift_left}; // directions for shift function
 enum gradientType {gradient_flat, gradient_linear, gradient_doubleLinear, gradient_radial}; // gradient types
@@ -34,36 +32,36 @@ enum anaglyphTint {tint_color, tint_gray, tint_true, tint_half, tint_optimized, 
 
 bool IsRGBColorDark(int red, int green, int blue); // is the RGB value given dark or not ?
 
-Mat QImage2Mat(const QImage &source); // convert QImage to Mat
-Mat QPixmap2Mat(const QPixmap &source); // convert QPixmap to Mat
+cv::Mat QImage2Mat(const QImage &source); // convert QImage to Mat
+cv::Mat QPixmap2Mat(const QPixmap &source); // convert QPixmap to Mat
 
-QImage Mat2QImage(const Mat &source); // convert Mat to QImage
-QPixmap Mat2QPixmap(const Mat &source); // convert Mat to QPixmap
-QPixmap Mat2QPixmapResized(const Mat &source, const int &width, const int &height, const bool &smooth); // convert Mat to resized QPixmap
-QImage cvMatToQImage(const Mat &source); // another implementation Mat type wise
+QImage Mat2QImage(const cv::Mat &source); // convert Mat to QImage
+QPixmap Mat2QPixmap(const cv::Mat &source); // convert Mat to QPixmap
+QPixmap Mat2QPixmapResized(const cv::Mat &source, const int &width, const int &height, const bool &smooth); // convert Mat to resized QPixmap
+QImage cvMatToQImage(const cv::Mat &source); // another implementation Mat type wise
 
-Mat BrightnessContrast(const Mat &source, const double &alpha, const int &beta); // brightness and contrast
-Mat GammaCorrection(const Mat &source, const double gamma); // gamma correction
-Mat EqualizeHistogram(const Mat &source); // histogram equalization
-Mat SimplestColorBalance(const Mat &source, const float &percent); // color balance with histograms
+cv::Mat BrightnessContrast(const cv::Mat &source, const double &alpha, const int &beta); // brightness and contrast
+cv::Mat GammaCorrection(const cv::Mat &source, const double gamma); // gamma correction
+cv::Mat EqualizeHistogram(const cv::Mat &source); // histogram equalization
+cv::Mat SimplestColorBalance(const cv::Mat &source, const float &percent); // color balance with histograms
 
-Mat DilatePixels(const Mat &source, const int &dilation_size); // dilate pixels
-Mat ErodePixels(const Mat &source, const int &erosion_size); // erode pixels
+cv::Mat DilatePixels(const cv::Mat &source, const int &dilation_size); // dilate pixels
+cv::Mat ErodePixels(const cv::Mat &source, const int &erosion_size); // erode pixels
 
-Mat ShiftFrame(const Mat &source, const int &nb_pixels, const shift_direction &direction); // shift frame in one direction
+cv::Mat ShiftFrame(const cv::Mat &source, const int &nb_pixels, const shift_direction &direction); // shift frame in one direction
 
-Mat CopyFromImage (Mat source, const Rect &frame); // copy part of an image
-Mat ResizeImageAspectRatio(const Mat &source, const Size &frame); // Resize image keeping aspect ratio
+cv::Mat CopyFromImage (cv::Mat source, const cv::Rect &frame); // copy part of an image
+cv::Mat ResizeImageAspectRatio(const cv::Mat &source, const cv::Size &frame); // Resize image keeping aspect ratio
 
-Mat DrawColoredContours(const Mat &source, const double &sigma, const int &apertureSize, const int &thickness); // draw colored contours of an image
+cv::Mat DrawColoredContours(const cv::Mat &source, const double &sigma, const int &apertureSize, const int &thickness); // draw colored contours of an image
 
-double PSNR(const Mat &source1, const Mat &source2); // noise difference between 2 images
+double PSNR(const cv::Mat &source1, const cv::Mat &source2); // noise difference between 2 images
 
-void GradientFillGray(const int &gradient_type, Mat &img, const Mat &msk,
-                      const Point &beginPoint, const Point &endPoint,
+void GradientFillGray(const int &gradient_type, cv::Mat &img, const cv::Mat &msk,
+                      const cv::Point &beginPoint, const cv::Point &endPoint,
                       const int &beginColor, const int &endColor,
-                      const int &curve, Rect area = Rect(0, 0, 0, 0)); // fill a 1-channel image with the mask converted to gray gradients
+                      const int &curve, cv::Rect area = cv::Rect(0, 0, 0, 0)); // fill a 1-channel image with the mask converted to gray gradients
 
-Mat AnaglyphTint(const Mat & source, const int &tint); // change tint of image to avoid disturbing colors in red-cyan anaglyph mode
+cv::Mat AnaglyphTint(const cv::Mat & source, const int &tint); // change tint of image to avoid disturbing colors in red-cyan anaglyph mode
 
 #endif // MAT2IMAGE_H

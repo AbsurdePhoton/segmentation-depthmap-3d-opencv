@@ -3,17 +3,7 @@
  * OpenCV image tools library
  * Author: AbsurdePhoton
  *
- * v1.8 - 2018/10/21
- *
- * Convert mat images to QPixmap or QImage and vice-versa
- * Brightness, Contrast, Gamma, Equalize, Color Balance
- * Erosion / dilation of pixels
- * Copy part of image
- * Resize image keeping aspect ration
- * Contours using Canny algorithm with auto min and max threshold
- * Noise reduction quality
- * Gray gradients
- * Red-cyan anaglyph tints
+ * v1.9 - 2019/07/08
  *
 #-------------------------------------------------*/
 
