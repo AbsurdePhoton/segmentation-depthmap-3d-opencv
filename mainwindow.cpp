@@ -247,8 +247,8 @@ void MainWindow::on_listWidget_labels_currentItemChanged(QListWidgetItem *curren
 
 void MainWindow::SaveDirBaseFile()
 {
-    cv::FileStorage fs(basedirinifile, cv::FileStorage::WRITE); // open labels file for writing
-    fs << "BaseDir" << basedir; // write labels count
+    cv::FileStorage fs(basedirinifile, cv::FileStorage::WRITE); // open dir ini file for writing
+    fs << "BaseDir" << basedir; // write folder name
     fs.release(); // close file
 }
 
@@ -1323,6 +1323,7 @@ void MainWindow::on_checkBox_3d_fullscreen_clicked() // view 3D scene fullscreen
     show();
     ui->openGLWidget_3d->move(QPoint(0, 0)); // move widget to upper-left position in window
     ui->openGLWidget_3d->resize(QSize(newW, newH)); // resize openGL widget
+    ui->openGLWidget_3d->raise(); // bring the 3d widget to front, above all other objects
 }
 
 void MainWindow::on_button_3d_reset_clicked() // recenter position and reset zoom for 3D scene
@@ -1425,6 +1426,7 @@ void MainWindow::on_checkBox_3d_capture_clicked() // launch 3D animation and sav
         setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
         show();
         ui->openGLWidget_3d->move(QPoint(0, 0)); // move widget to position (0,0)
+        ui->openGLWidget_3d->raise(); // bring the 3d widget to front, above all other objects
     }
     int newW = ui->spinBox_3d_resolution->value(); // width chosen by user
     int newH = round(double(newW) / (double(w) / h)); // ratio of widget rectangle
@@ -1570,6 +1572,11 @@ void MainWindow::on_checkBox_3d_capture_clicked() // launch 3D animation and sav
                                 & ~Qt::WindowCloseButtonHint) | Qt::WindowMinMaxButtonsHint));
         show();
         ui->openGLWidget_3d->move(QPoint(saveXOpenGL, saveYOpenGL)); // move back openGL widget
+        ui->spinBox_3D_rotate_x->raise(); // bring back controls over 3D view
+        ui->spinBox_3D_rotate_y->raise();
+        ui->horizontalSlider_3D_rotate_y->raise();
+        ui->verticalSlider_3D_rotate_x->raise();
+        ui->button_3d_reset->raise();
     ui->openGLWidget_3d->resize(saveWidthOpenGL, saveHeightOpenGL); // and resize it
     if ((ui->spinBox_3d_resolution->value() == ui->openGLWidget_3d->width()) & (!ui->checkBox_3d_capture_fullscreen->isChecked()))
             ui->openGLWidget_3d->update(); // force update of 3D scene if width of widget hasn't changed
@@ -1631,6 +1638,11 @@ void MainWindow::keyPressEvent(QKeyEvent *keyEvent) // special keys
         ui->openGLWidget_3d->move(QPoint(saveXOpenGL, saveYOpenGL)); // restore openGL widget to its previous position
         ui->openGLWidget_3d->resize(QSize(saveWidthOpenGL, saveHeightOpenGL)); // ... and size
         ui->checkBox_3d_fullscreen->setChecked(false); // uncheck fullscreen button
+        ui->spinBox_3D_rotate_x->raise(); // bring back controls over 3D view
+        ui->spinBox_3D_rotate_y->raise();
+        ui->horizontalSlider_3D_rotate_y->raise();
+        ui->verticalSlider_3D_rotate_x->raise();
+        ui->button_3d_reset->raise();
     }
     else if ((keyEvent->key() == Qt::Key_Escape) & (ui->checkBox_3d_capture->isChecked()) & (!abort_3d)) { // abort 3D capture
         abort_3d = true;
