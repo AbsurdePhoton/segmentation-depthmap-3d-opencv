@@ -148,6 +148,9 @@ private:
     void UpdateViewportDimensions(); // calculate width and height of the viewport
     cv::Point Viewport2Image(const cv::Point &p); // calculate coordinates in the image from the viewport
 
+    void resizeEvent(QResizeEvent* event) override;
+
+
     // the UI object, to access the UI elements created with Qt Designer
     Ui::MainWindow *ui;
 

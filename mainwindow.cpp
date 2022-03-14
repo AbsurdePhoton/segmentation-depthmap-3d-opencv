@@ -53,10 +53,12 @@ MainWindow::MainWindow(QWidget *parent) :
     setFocusPolicy(Qt::StrongFocus); // catch keyboard and mouse in priority
 
     // add size grip to openGL widget
+    /*
     ui->openGLWidget_3d->setWindowFlags(Qt::SubWindow);
     QSizeGrip * sizeGrip = new QSizeGrip(ui->openGLWidget_3d);
     QGridLayout * layout = new QGridLayout(ui->openGLWidget_3d);
     layout->addWidget(sizeGrip, 0,0,1,1,Qt::AlignBottom | Qt::AlignRight);
+    */
 
     // populate gray gradient curve combobox
     ui->listWidget_gradient_curve->blockSignals(true); // don't trigger automatic actions for these widgets
@@ -2010,4 +2012,16 @@ void MainWindow::ChangeLabelGradient() // update depthmap mask with gradient
     ui->openGLWidget_3d->depthmap3D = depthmap;
     updateVertices3D = true;
     Render(); // update view
+}
+
+void MainWindow::resizeEvent(QResizeEvent* event)
+{
+    QMainWindow::resizeEvent(event);
+
+    const int w = width() - ui->openGLWidget_3d->pos().x();
+    const int h = height() - ui->openGLWidget_3d->pos().y();
+    if (w > 0 && h > 0)
+    {
+        ui->openGLWidget_3d->setFixedSize(w, h);
+    }
 }
