@@ -646,3 +646,22 @@ void openGLWidget::Capture() // take a snapshot of rendered 3D scene
 {
     capture3D = grabFramebuffer(); // slow because it relies on glReadPixels() to read back the pixels
 }
+
+class QMainWindowKeyPressEventAccessor : public QMainWindow
+{
+public:
+    void callKeyPressEvent(QKeyEvent *keyEvent)
+    {
+        keyPressEvent(keyEvent);
+    }
+};
+
+void openGLWidget::keyPressEvent(QKeyEvent *keyEvent) // special keys
+{
+    for (QWidget* widget : QApplication::topLevelWidgets()) {
+        if (auto *mainWindow = qobject_cast<QMainWindow*>(widget)) {
+            static_cast<QMainWindowKeyPressEventAccessor*>(mainWindow)->callKeyPressEvent(keyEvent);
+            break;
+        }
+    }
+}

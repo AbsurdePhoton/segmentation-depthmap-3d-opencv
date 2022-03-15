@@ -1317,6 +1317,7 @@ void MainWindow::on_checkBox_3d_fullscreen_clicked() // view 3D scene fullscreen
     saveWidthOpenGL = ui->openGLWidget_3d->width();
     saveHeightOpenGL = ui->openGLWidget_3d->height();
 
+    /*
     QRect screenSize = qApp->desktop()->availableGeometry(qApp->desktop()->primaryScreen()); // get screen size in which app is run
     int newW = screenSize.width();
     int newH = round(newW * (double(ui->openGLWidget_3d->width()) / ui->openGLWidget_3d->height())); // keep aspect ratio of widget using new width
@@ -1326,6 +1327,11 @@ void MainWindow::on_checkBox_3d_fullscreen_clicked() // view 3D scene fullscreen
     ui->openGLWidget_3d->move(QPoint(0, 0)); // move widget to upper-left position in window
     ui->openGLWidget_3d->resize(QSize(newW, newH)); // resize openGL widget
     ui->openGLWidget_3d->raise(); // bring the 3d widget to front, above all other objects
+    */
+
+    ui->openGLWidget_3d->setWindowFlags(Qt::Window);
+    ui->openGLWidget_3d->setContentsMargins(0, 0, 0, 0);
+    ui->openGLWidget_3d->showFullScreen();
 }
 
 void MainWindow::on_button_3d_reset_clicked() // recenter position and reset zoom for 3D scene
@@ -1634,9 +1640,13 @@ void MainWindow::keyPressEvent(QKeyEvent *keyEvent) // special keys
         qApp->processEvents();
     }
     else if ((keyEvent->key() == Qt::Key_Escape) & (ui->checkBox_3d_fullscreen->isChecked())) { // get out of fullscreen view
-        this->setWindowFlags((((windowFlags() | Qt::CustomizeWindowHint)
-                                & ~Qt::WindowCloseButtonHint) | Qt::WindowMinMaxButtonsHint));
-        show();
+        //this->setWindowFlags((((windowFlags() | Qt::CustomizeWindowHint)
+        //                        & ~Qt::WindowCloseButtonHint) | Qt::WindowMinMaxButtonsHint));
+        //show();
+
+        ui->openGLWidget_3d->setWindowFlags(Qt::SubWindow);
+        ui->openGLWidget_3d->showNormal();
+
         ui->openGLWidget_3d->move(QPoint(saveXOpenGL, saveYOpenGL)); // restore openGL widget to its previous position
         ui->openGLWidget_3d->resize(QSize(saveWidthOpenGL, saveHeightOpenGL)); // ... and size
         ui->checkBox_3d_fullscreen->setChecked(false); // uncheck fullscreen button
@@ -2017,11 +2027,12 @@ void MainWindow::ChangeLabelGradient() // update depthmap mask with gradient
 void MainWindow::resizeEvent(QResizeEvent* event)
 {
     QMainWindow::resizeEvent(event);
-
-    const int w = width() - ui->openGLWidget_3d->pos().x();
-    const int h = height() - ui->openGLWidget_3d->pos().y();
-    if (w > 0 && h > 0)
-    {
-        ui->openGLWidget_3d->setFixedSize(w, h);
+    if (!ui->checkBox_3d_fullscreen->isChecked()) {
+        const int w = width() - ui->openGLWidget_3d->pos().x();
+        const int h = height() - ui->openGLWidget_3d->pos().y();
+        if (w > 0 && h > 0)
+        {
+            ui->openGLWidget_3d->setFixedSize(w, h);
+        }
     }
 }

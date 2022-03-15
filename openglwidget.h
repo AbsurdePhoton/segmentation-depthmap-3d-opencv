@@ -90,6 +90,7 @@ protected:
     void mousePressEvent(QMouseEvent *event); // save initial mouse position for move and rotate
     void mouseMoveEvent(QMouseEvent *event); // move and rotate view with mouse buttons
     void wheelEvent(QWheelEvent *event); // zoom
+    void keyPressEvent(QKeyEvent *keyEvent);
     void ComputeVertices(); // create vertices
     void ComputeIndexes(); // create indexes
     void UpdateVertices(); // update vertices z
