@@ -38,6 +38,9 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+    void writePositionSettings();
+    void readPositionSettings();
+
 public slots:
 
 private slots:
@@ -123,13 +126,16 @@ private:
     void DeleteAllLabels(); // delete ALL labels and create one new if wanted
 
     //// Keyboard & mouse events
-    void keyPressEvent(QKeyEvent *keyEvent); // for the create cell mode
-    void keyReleaseEvent(QKeyEvent *keyEvent);
+    void keyPressEvent(QKeyEvent *keyEvent) override; // for the create cell mode
+    void keyReleaseEvent(QKeyEvent *keyEvent) override;
 
-    void mouseReleaseEvent(QMouseEvent *eventRelease); // when the mouse button is released
-    void mousePressEvent(QMouseEvent *eventPress); // mouse events = zoom, set cell color etc
-    void mouseMoveEvent(QMouseEvent *eventPress);
-    void wheelEvent(QWheelEvent *wheelEvent);
+    void mouseReleaseEvent(QMouseEvent *eventRelease) override; // when the mouse button is released
+    void mousePressEvent(QMouseEvent *eventPress) override; // mouse events = zoom, set cell color etc
+    void mouseMoveEvent(QMouseEvent *eventPress) override;
+    void wheelEvent(QWheelEvent *wheelEvent) override;
+
+    void moveEvent(QMoveEvent*) override;
+    void resizeEvent(QResizeEvent*) override;
 
     //// Display
     void Render(); // display image in viewport with depthmap and selection
@@ -147,9 +153,6 @@ private:
     void SetViewportXY(const int &x, const int &y); // change the origin of the viewport
     void UpdateViewportDimensions(); // calculate width and height of the viewport
     cv::Point Viewport2Image(const cv::Point &p); // calculate coordinates in the image from the viewport
-
-    void resizeEvent(QResizeEvent* event) override;
-
 
     // the UI object, to access the UI elements created with Qt Designer
     Ui::MainWindow *ui;

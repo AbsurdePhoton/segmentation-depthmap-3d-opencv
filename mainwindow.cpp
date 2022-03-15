@@ -19,6 +19,7 @@
 #include <QSizeGrip>
 #include <QGridLayout>
 #include <QDesktopWidget>
+#include <QSettings>
 
 #include "mat-image-tools.h"
 #include "dispersion3D.h"
@@ -49,7 +50,7 @@ MainWindow::MainWindow(QWidget *parent) :
     // window
     setWindowFlags((((windowFlags() | Qt::CustomizeWindowHint)
                             & ~Qt::WindowCloseButtonHint) | Qt::WindowMinMaxButtonsHint)); // don't show buttons in title bar
-    this->setWindowState(Qt::WindowMaximized); // maximize window
+    //this->setWindowState(Qt::WindowMaximized); // maximize window
     setFocusPolicy(Qt::StrongFocus); // catch keyboard and mouse in priority
 
     // add size grip to openGL widget
@@ -143,6 +144,8 @@ void MainWindow::on_button_quit_clicked()
     int quit = QMessageBox::question(this, "Quit this wonderful program", "Are you sure you want to quit?", QMessageBox::Yes|QMessageBox::No); // quit, are you sure ?
     if (quit == QMessageBox::No) // don't quit !
         return;
+
+    writePositionSettings();
 
     QCoreApplication::quit();
 }
@@ -2024,6 +2027,45 @@ void MainWindow::ChangeLabelGradient() // update depthmap mask with gradient
     Render(); // update view
 }
 
+// https://stackoverflow.com/questions/74690/how-do-i-store-the-window-size-between-sessions-in-qt
+void MainWindow::writePositionSettings()
+{
+    QSettings qsettings("noname", "Tiles");
+
+    qsettings.beginGroup("mainwindow");
+
+    qsettings.setValue("geometry", saveGeometry());
+    qsettings.setValue("savestate", saveState());
+    qsettings.setValue("maximized", isMaximized());
+    if (!isMaximized()) {
+        qsettings.setValue("pos", pos());
+        qsettings.setValue("size", size());
+    }
+
+    qsettings.endGroup();
+}
+
+void MainWindow::readPositionSettings()
+{
+    QSettings qsettings("noname", "Tiles");
+
+    qsettings.beginGroup("mainwindow");
+
+    restoreGeometry(qsettings.value("geometry", saveGeometry()).toByteArray());
+    restoreState(qsettings.value("savestate", saveState()).toByteArray());
+    move(qsettings.value("pos", pos()).toPoint());
+    resize(qsettings.value("size", size()).toSize());
+    if (qsettings.value("maximized", isMaximized()).toBool())
+        showMaximized();
+
+    qsettings.endGroup();
+}
+
+void MainWindow::moveEvent(QMoveEvent*)
+{
+    writePositionSettings();
+}
+
 void MainWindow::resizeEvent(QResizeEvent* event)
 {
     QMainWindow::resizeEvent(event);
@@ -2035,4 +2077,5 @@ void MainWindow::resizeEvent(QResizeEvent* event)
             ui->openGLWidget_3d->setFixedSize(w, h);
         }
     }
+    writePositionSettings();
 }
