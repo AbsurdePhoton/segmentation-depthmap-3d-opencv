@@ -2030,7 +2030,7 @@ void MainWindow::ChangeLabelGradient() // update depthmap mask with gradient
 // https://stackoverflow.com/questions/74690/how-do-i-store-the-window-size-between-sessions-in-qt
 void MainWindow::writePositionSettings()
 {
-    QSettings qsettings("noname", "Tiles");
+    QSettings qsettings;
 
     qsettings.beginGroup("mainwindow");
 
@@ -2047,7 +2047,7 @@ void MainWindow::writePositionSettings()
 
 void MainWindow::readPositionSettings()
 {
-    QSettings qsettings("noname", "Tiles");
+    QSettings qsettings;
 
     qsettings.beginGroup("mainwindow");
 
@@ -2055,7 +2055,7 @@ void MainWindow::readPositionSettings()
     restoreState(qsettings.value("savestate", saveState()).toByteArray());
     move(qsettings.value("pos", pos()).toPoint());
     resize(qsettings.value("size", size()).toSize());
-    if (qsettings.value("maximized", isMaximized()).toBool())
+    if (qsettings.value("maximized", true).toBool())
         showMaximized();
 
     qsettings.endGroup();
