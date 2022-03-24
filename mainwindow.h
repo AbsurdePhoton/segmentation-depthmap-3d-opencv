@@ -55,7 +55,7 @@ private slots:
     void on_listWidget_labels_currentItemChanged(QListWidgetItem *currentItem); // show current label color when item change
 
     //// load & save
-    void ChangeBaseDir(QString filename); // Set base dir and file
+    void ChangeBaseDir(const QString& filename); // Set base dir and file
     void SaveDirBaseFile(); // just to keep the last open dir
 
     void DisableGUI();

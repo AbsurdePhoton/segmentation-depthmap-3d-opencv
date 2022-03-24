@@ -95,9 +95,7 @@ protected:
     void ComputeIndexes(); // create indexes
     void UpdateVertices(); // update vertices z
     void ComputeColors(); // recompute colors
-    int NumberOfVertices(const int &rows, const int &cols); // number of expected vertices for an image
-    int NumberOfIndexes(const int &rows, const int &cols); // number of expected indexes for an image
-    GLuint VertexIndex(const int &y, const int &x); // pixel's index in a image
+    GLuint VertexIndex(const int &y, const int &x) const; // pixel's index in a image
 
 public slots:
 

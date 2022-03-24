@@ -15,13 +15,13 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    a.setApplicationName("segmentation-depthmap-3d-opencv");
-    a.setOrganizationName("AbsurdePhoton");
-    a.setOrganizationDomain("www.absurdephoton.fr");
+    QApplication::setApplicationName("segmentation-depthmap-3d-opencv");
+    QApplication::setOrganizationName("AbsurdePhoton");
+    QApplication::setOrganizationDomain("www.absurdephoton.fr");
 
     MainWindow w;
     w.readPositionSettings();
     w.show();
 
-    return a.exec();
+    return QApplication::exec();
 }

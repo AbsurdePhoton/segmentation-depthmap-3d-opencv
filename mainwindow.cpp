@@ -32,7 +32,7 @@ using namespace std;
 
 void MainWindow::AddCurveItem(const QString &title, const QColor &color, const QString &tip) // used to add gray gradient curves to the list
 {
-    QListWidgetItem *item = new QListWidgetItem (); // create new label
+    auto *item = new QListWidgetItem(); // create new label
     item->setText(title); // set name to current label
     item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled); // item enabled and selectable
     item->setSelected(false); // but don't select it !
@@ -49,8 +49,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // window
     setWindowFlags((((windowFlags() | Qt::CustomizeWindowHint)
-                            & ~Qt::WindowCloseButtonHint) | Qt::WindowMinMaxButtonsHint)); // don't show buttons in title bar
-    //this->setWindowState(Qt::WindowMaximized); // maximize window
+        & ~Qt::WindowCloseButtonHint) | Qt::WindowMinMaxButtonsHint)); // don't show buttons in title bar
+//this->setWindowState(Qt::WindowMaximized); // maximize window
     setFocusPolicy(Qt::StrongFocus); // catch keyboard and mouse in priority
 
     // add size grip to openGL widget
@@ -63,17 +63,17 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // populate gray gradient curve combobox
     ui->listWidget_gradient_curve->blockSignals(true); // don't trigger automatic actions for these widgets
-    AddCurveItem("LINEAR",      QColor(0,128,0),    "Gray levels go straight from beginning to end\n    f(x) = x");
-    AddCurveItem("COSINUS²",    QColor(0,0,128),    "Gray levels are spread a bit more at beginning and end\n    f(x)=cos(pi/2-x*pi/2)²");
-    AddCurveItem("SIGMOID",     QColor(0,0,128),    "S-shaped gray levels\n1/3 beginning 1/3 gradient 1/3 end\n    f(x)=1/(1 + e(-5*(2x -1))");
-    AddCurveItem("COSINUS",     QColor(128,128,0),  "Fast beginning and strong end grays\n    f(x)=cos(pi/2-x*pi/2)");
-    AddCurveItem("COS²SQRT",    QColor(128,128,0),  "Center grays are predominant\n    f(x)=cos(pi/2−sqrt(x)*pi/2)²");
-    AddCurveItem("POWER²",      QColor(128,64,0),   "1/3 of beginning level then gradient for the rest, fast ending\n    f(x)=x²");
-    AddCurveItem("COS²POWER2",  QColor(128,64,0),   "Very strong beginning then gradient\n    f(x)=cos(pi/2−x²∙pi/2)²");
-    AddCurveItem("POWER³",      QColor(128,64,0),   "Very strong beginning and fast ending\n    f(x)=x³");
-    AddCurveItem("UNDULATE",    QColor(128,0,0),    "Waves modulated by gray levels range\n    f(x)=cos(x/4*pi)");
-    AddCurveItem("UNDULATE²",   QColor(128,0,0),    "Increasing waves modulated by gray levels range\n    f(x)=cos((x*2*pi)²)/2+0.5");
-    AddCurveItem("UNDULATE+",   QColor(128,0,0),    "Increasing levels of gray stripes\n    f(x)=f(x) = cos(pi²∙(x+2.085)²) / ((x+2.085)³+10) + (x+2.085) − 2.11");
+    AddCurveItem("LINEAR", QColor(0, 128, 0), "Gray levels go straight from beginning to end\n    f(x) = x");
+    AddCurveItem("COSINUS²", QColor(0, 0, 128), "Gray levels are spread a bit more at beginning and end\n    f(x)=cos(pi/2-x*pi/2)²");
+    AddCurveItem("SIGMOID", QColor(0, 0, 128), "S-shaped gray levels\n1/3 beginning 1/3 gradient 1/3 end\n    f(x)=1/(1 + e(-5*(2x -1))");
+    AddCurveItem("COSINUS", QColor(128, 128, 0), "Fast beginning and strong end grays\n    f(x)=cos(pi/2-x*pi/2)");
+    AddCurveItem("COS²SQRT", QColor(128, 128, 0), "Center grays are predominant\n    f(x)=cos(pi/2−sqrt(x)*pi/2)²");
+    AddCurveItem("POWER²", QColor(128, 64, 0), "1/3 of beginning level then gradient for the rest, fast ending\n    f(x)=x²");
+    AddCurveItem("COS²POWER2", QColor(128, 64, 0), "Very strong beginning then gradient\n    f(x)=cos(pi/2−x²∙pi/2)²");
+    AddCurveItem("POWER³", QColor(128, 64, 0), "Very strong beginning and fast ending\n    f(x)=x³");
+    AddCurveItem("UNDULATE", QColor(128, 0, 0), "Waves modulated by gray levels range\n    f(x)=cos(x/4*pi)");
+    AddCurveItem("UNDULATE²", QColor(128, 0, 0), "Increasing waves modulated by gray levels range\n    f(x)=cos((x*2*pi)²)/2+0.5");
+    AddCurveItem("UNDULATE+", QColor(128, 0, 0), "Increasing levels of gray stripes\n    f(x)=f(x) = cos(pi²∙(x+2.085)²) / ((x+2.085)³+10) + (x+2.085) − 2.11");
     ui->listWidget_gradient_curve->blockSignals(false);
 
     // populate tints comboBox
@@ -113,7 +113,9 @@ void MainWindow::InitializeValues() // Global variables init
     if (fs.isOpened()) {
         fs["BaseDir"] >> basedir; // load labels
     }
-        else basedir = "/home/"; // base path and file
+    else {
+        basedir = "/home/"; // base path and file
+    }
     basefile = "example";
     nbLabels = 0; // no labels yet
     updateVertices3D = false; // not an update
@@ -129,7 +131,7 @@ void MainWindow::InitializeValues() // Global variables init
     cvtColor(depthmap, depthmap, COLOR_BGR2GRAY);
     ui->openGLWidget_3d->image3D = image; // transfer data to widget
     ui->openGLWidget_3d->depthmap3D = depthmap;
-    ui->openGLWidget_3d->area3D = Rect(0, 0, image.cols,image.rows);
+    ui->openGLWidget_3d->area3D = Rect(0, 0, image.cols, image.rows);
     ui->openGLWidget_3d->mask3D = Mat::zeros(image.rows, image.cols, CV_8UC1);
     ui->openGLWidget_3d->depth3D = 1; // initial view
     ui->openGLWidget_3d->anaglyphShift = -1.5;
@@ -141,9 +143,10 @@ void MainWindow::InitializeValues() // Global variables init
 
 void MainWindow::on_button_quit_clicked()
 {
-    int quit = QMessageBox::question(this, "Quit this wonderful program", "Are you sure you want to quit?", QMessageBox::Yes|QMessageBox::No); // quit, are you sure ?
-    if (quit == QMessageBox::No) // don't quit !
+    int quit = QMessageBox::question(this, "Quit this wonderful program", "Are you sure you want to quit?", QMessageBox::Yes | QMessageBox::No); // quit, are you sure ?
+    if (quit == QMessageBox::No) { // don't quit !
         return;
+    }
 
     writePositionSettings();
 
@@ -201,15 +204,17 @@ void MainWindow::on_listWidget_labels_currentItemChanged(QListWidgetItem *curren
             selection_rect.height += selection_rect.y - rect_temp.y;
             selection_rect.y = rect_temp.y;
         }
-        if (rect_temp.x + rect_temp.width > selection_rect.x + selection_rect.width)
+        if (rect_temp.x + rect_temp.width > selection_rect.x + selection_rect.width) {
             selection_rect.width = rect_temp.x + rect_temp.width - selection_rect.x;
-        if (rect_temp.y + rect_temp.height > selection_rect.y + selection_rect.height)
+        }
+        if (rect_temp.y + rect_temp.height > selection_rect.y + selection_rect.height) {
             selection_rect.height = rect_temp.y + rect_temp.height - selection_rect.y;
+        }
     }
     ui->openGLWidget_3d->area3D = selection_rect; // update opengl widget elements
     ui->openGLWidget_3d->mask3D = currentLabelMask;
 
-    drawContours(selection, contours, -1, Vec3b(0, 255, 255), 1, 8, hierarchy ); // draw contour of new cell in selection mask
+    drawContours(selection, contours, -1, Vec3b(0, 255, 255), 1, 8, hierarchy); // draw contour of new cell in selection mask
     /*cv::rectangle(selection, Rect(selection_rect.x, selection_rect.y, selection_rect.width, selection_rect.height),
                           Vec3b(255, 255, 255), 2); // draw entire selection rectangle*/
 
@@ -218,22 +223,22 @@ void MainWindow::on_listWidget_labels_currentItemChanged(QListWidgetItem *curren
     int row = ui->listWidget_labels->currentRow(); // get current row of the list to access array indexed on it
 
     switch (gradients[row].gradient) { // gradient type ?
-        case gradient_flat: {
-            ui->radioButton_flat->setChecked(true); // set correspondng radio button
-            break;
-        }
-        case gradient_linear: {
-            ui->radioButton_linear->setChecked(true);
-            break;
-        }
-        case gradient_doubleLinear: {
-            ui->radioButton_double_linear->setChecked(true);
-            break;
-        }
-        case gradient_radial: {
-            ui->radioButton_radial->setChecked(true);
-            break;
-        }
+    case gradient_flat: {
+        ui->radioButton_flat->setChecked(true); // set correspondng radio button
+        break;
+    }
+    case gradient_linear: {
+        ui->radioButton_linear->setChecked(true);
+        break;
+    }
+    case gradient_doubleLinear: {
+        ui->radioButton_double_linear->setChecked(true);
+        break;
+    }
+    case gradient_radial: {
+        ui->radioButton_radial->setChecked(true);
+        break;
+    }
     }
 
     ui->horizontalSlider_begin->setValue(gradients[row].beginColor); // show begin and end colors
@@ -257,20 +262,21 @@ void MainWindow::SaveDirBaseFile()
     fs.release(); // close file
 }
 
-void MainWindow::ChangeBaseDir(QString filename) // Set base dir and file
+void MainWindow::ChangeBaseDir(const QString& filename) // Set base dir and file
 {
     basefile = filename.toUtf8().constData(); // base file name and dir are used after to save other files
 
     // Remove extension if present
     size_t period_idx = basefile.rfind('.');
-    if (std::string::npos != period_idx)
+    if (std::string::npos != period_idx) {
         basefile.erase(period_idx);
+    }
 
     basedir = basefile;
     size_t found = basefile.find_last_of("\\/"); // find last directory
-    std::string separator = basefile.substr(found,1); // copy path separator (Linux <> Windows)
-    basedir = basedir.substr(0,found) + separator; // define base path
-    basefile = basefile.substr(found+1); // delete path in base file
+    std::string separator = basefile.substr(found, 1); // copy path separator (Linux <> Windows)
+    basedir = basedir.substr(0, found) + separator; // define base path
+    basefile = basefile.substr(found + 1); // delete path in base file
 
     SaveDirBaseFile(); // Save current path to ini file
 }
@@ -298,8 +304,9 @@ void MainWindow::on_button_load_segmentation_clicked() // load segmentation XML 
 {
     QString filename = QFileDialog::getOpenFileName(this, "Load segmentation from XML file...", QString::fromStdString(basedir + "*-segmentation-data.xml"), "*.xml *.XML"); // get file name
 
-    if (filename.isNull() || filename.isEmpty()) // cancel ?
+    if (filename.isNull() || filename.isEmpty()) { // cancel ?
         return;
+    }
 
     QApplication::setOverrideCursor(Qt::WaitCursor); // wait cursor
     qApp->processEvents();
@@ -315,11 +322,12 @@ void MainWindow::on_button_load_segmentation_clicked() // load segmentation XML 
     ChangeBaseDir(filename);
 
     size_t pos = basefile.find("-segmentation-data"); // the XML file must end with this
-    if (pos != std::string::npos) // yes !
+    if (pos != std::string::npos) { // yes !
         basefile.erase(pos, basefile.length());
+    }
     else { // doesn't end with "-segmentation-data"
         QMessageBox::critical(this, "File name error",
-                              "There was a problem reading the segmentation mask file:\nit must end with ''-segmentation-data.xml''");
+            "There was a problem reading the segmentation mask file:\nit must end with ''-segmentation-data.xml''");
         DisableGUI(); // problem : reset GUI elements and exit
         return;
     }
@@ -328,12 +336,14 @@ void MainWindow::on_button_load_segmentation_clicked() // load segmentation XML 
 
     std::string filesession = filename.toUtf8().constData(); // base file name
     pos = filesession.find("-segmentation-data.xml"); // ends with "-segmentation-data.xml"
-    if (pos != std::string::npos) filesession.erase(pos, filesession.length()); // this is what will be used to name files hereafter
+    if (pos != std::string::npos) {
+        filesession.erase(pos, filesession.length()); // this is what will be used to name files hereafter
+    }
 
     depthmap = cv::imread(filesession + "-segmentation-mask.png", IMREAD_COLOR); // load segmentation mask
     if (depthmap.empty()) { // mask empty, not good !
         QMessageBox::critical(this, "File error",
-                              "There was a problem reading the segmentation mask file:\nit must end with ''-segmentation-mask.png''");
+            "There was a problem reading the segmentation mask file:\nit must end with ''-segmentation-mask.png''");
         DisableGUI(); // problem : reset GUI elements and exit
         return;
     }
@@ -342,14 +352,14 @@ void MainWindow::on_button_load_segmentation_clicked() // load segmentation XML 
 
     if (image.empty()) {
         QMessageBox::critical(this, "File error",
-                                      "There was a problem reading the segmentation image file:\nit must end with ''-segmentation-image.png''");
+            "There was a problem reading the segmentation image file:\nit must end with ''-segmentation-image.png''");
         DisableGUI();
         return;
     }
 
     if ((image.cols != depthmap.cols) | (image.rows != depthmap.rows)) { // image and mask sizes not the same -> not good !
         QMessageBox::critical(this, "Image size error",
-                                    "The image and mask image size (width and height) differ");
+            "The image and mask image size (width and height) differ");
         DisableGUI();
         return;
     }
@@ -363,7 +373,7 @@ void MainWindow::on_button_load_segmentation_clicked() // load segmentation XML 
 
     if (!fs.isOpened()) { // file not found ? this error is not handled by the above instructions
         QMessageBox::critical(this, "File error",
-                              "There was a problem reading the segmentation data file:\nit must end with ''-segmentation-data.xml''");
+            "There was a problem reading the segmentation data file:\nit must end with ''-segmentation-data.xml''");
         DisableGUI();
         return;
     }
@@ -372,12 +382,12 @@ void MainWindow::on_button_load_segmentation_clicked() // load segmentation XML 
     try { // try to load labels data
         fs["LabelsMask"] >> labels; // load labels mask
     }
-    catch( cv::Exception& e ) // problem ?
+    catch (cv::Exception& e) // problem ?
     {
         const char* err_msg = e.what();
         QMessageBox::critical(this, "XML Segmentation file error",
-                              "There was a problem reading the segmentation XML file\nThe \"LabelsMask\" data is wrong\nError:\n"
-                              + QString(err_msg));
+            "There was a problem reading the segmentation XML file\nThe \"LabelsMask\" data is wrong\nError:\n"
+            + QString(err_msg));
         DisableGUI();
         return;
     }
@@ -387,7 +397,7 @@ void MainWindow::on_button_load_segmentation_clicked() // load segmentation XML 
 
     if (nbLabels <= 0) { // no labels ?
         QMessageBox::critical(this, "XML Segmentation file error",
-                              "There was a problem reading the segmentation XML file\nThe data is wrong");
+            "There was a problem reading the segmentation XML file\nThe data is wrong");
         DisableGUI();
         return;
     }
@@ -398,15 +408,15 @@ void MainWindow::on_button_load_segmentation_clicked() // load segmentation XML 
         int num = -1;
         std::string name = "###Error###"; // errors are not handled here, better set rubbish values, the user will see it anyway
 
-        QListWidgetItem *item = new QListWidgetItem (); // create new label item
+        auto *item = new QListWidgetItem(); // create new label item
         std::string field;
 
         field = "LabelId" + std::to_string(i); // read label id
-        fs [field] >> num;
+        fs[field] >> num;
         item->setData(Qt::UserRole, num); // set it to current label
 
         field = "LabelName" + std::to_string(i); // read label name
-        fs [field] >> name;
+        fs[field] >> name;
         item->setText(QString::fromStdString(name)); // set name to current label
 
         item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled); // item enabled, editable and selectable
@@ -416,7 +426,7 @@ void MainWindow::on_button_load_segmentation_clicked() // load segmentation XML 
 
         Mat1b mask_temp = labels == num; // extract label to temp depthmap
         Moments m = moments(mask_temp, false); // compute the barycenter of the label representation
-        cv::Point p(m.m10/m.m00, m.m01/m.m00);
+        cv::Point p(m.m10 / m.m00, m.m01 / m.m00);
 
         uchar col = int(round(double(p.y) / image.rows * 255)); // set an arbitray gray level based on the barycenter height in image
 
@@ -426,10 +436,12 @@ void MainWindow::on_button_load_segmentation_clicked() // load segmentation XML 
         gradients[i].beginColor = col; // gradient begin and end color are barycenter color
         gradients[i].endColor = col;
         gradients[i].beginPoint = p; // begin point of gradient arrow is the barycenter
-        if (p.y - 50 > 0) // the arrow is 50 pixels long (vertical), the head should stay in the image rectangle
+        if (p.y - 50 > 0) { // the arrow is 50 pixels long (vertical), the head should stay in the image rectangle
             gradients[i].endPoint = cv::Point(p.x, p.y - 50);
-        else
+        }
+        else {
             gradients[i].endPoint = cv::Point(p.x, p.y + 50);
+        }
         gradients[i].gradient = gradient_flat; // gradient flat at first
         gradients[i].curve = curve_linear; // and gradient curve set to linear
     }
@@ -458,13 +470,17 @@ void MainWindow::on_button_load_segmentation_clicked() // load segmentation XML 
 
     double zoomX = double(ui->label_viewport->width()) / image.cols; // find the best fit for the viewport : try vertical and horizontal ratios
     double zoomY = double(ui->label_viewport->height()) / image.rows;
-    if (zoomX < zoomY) zoom = zoomX; // the lowest fits the view
-        else zoom = zoomY;
+    if (zoomX < zoomY) {
+        zoom = zoomX; // the lowest fits the view
+    }
+    else {
+        zoom = zoomY;
+    }
     oldZoom = zoom; // no zoom change
     ShowZoomValue(); // display current zoom value
     viewport = Rect(0, 0, image.cols, image.rows); // update viewport size
 
-    thumbnail = ResizeImageAspectRatio(image, cv::Size(ui->label_thumbnail->width(),ui->label_thumbnail->height())); // create thumbnail
+    thumbnail = ResizeImageAspectRatio(image, cv::Size(ui->label_thumbnail->width(), ui->label_thumbnail->height())); // create thumbnail
     ShowThumbnail();
 
     ui->openGLWidget_3d->depthmap3D = depthmap; // initialize 3D view data
@@ -486,14 +502,15 @@ void MainWindow::on_button_save_depthmap_clicked() // save XML and image depthma
 {
     if (!loaded) { // nothing loaded yet = get out
         QMessageBox::warning(this, "Nothing to save",
-                                 "Not now!\n\nBefore anything else, load a Segmentation or Depthmap project");
+            "Not now!\n\nBefore anything else, load a Segmentation or Depthmap project");
         return;
     }
 
     QString filename = QFileDialog::getSaveFileName(this, "Save depthmap to XML file...", "./" + QString::fromStdString(basedir + basefile + "-depthmap-data.xml"), "*.xml *.XML"); // filename
 
-    if (filename.isNull() || filename.isEmpty()) // cancel ?
+    if (filename.isNull() || filename.isEmpty()) { // cancel ?
         return;
+    }
 
     QApplication::setOverrideCursor(Qt::WaitCursor); // wait cursor
     qApp->processEvents();
@@ -508,13 +525,19 @@ void MainWindow::on_button_save_depthmap_clicked() // save XML and image depthma
     basefile = basefile.substr(found+1); // delete ending slash*/
     ChangeBaseDir(filename);
     size_t pos = basefile.find("-depthmap-data");
-    if (pos != std::string::npos) basefile.erase(pos, basefile.length());
+    if (pos != std::string::npos) {
+        basefile.erase(pos, basefile.length());
+    }
 
     std::string filesession = filename.toUtf8().constData();
     pos = filesession.find("-depthmap-data.xml"); // use base file name
-    if (pos != std::string::npos) filesession.erase(pos, filesession.length());
+    if (pos != std::string::npos) {
+        filesession.erase(pos, filesession.length());
+    }
     pos = filesession.find(".xml"); // use base file name
-    if (pos != std::string::npos) filesession.erase(pos, filesession.length());
+    if (pos != std::string::npos) {
+        filesession.erase(pos, filesession.length());
+    }
 
     bool write;
     Mat depthmap_temp;
@@ -523,7 +546,7 @@ void MainWindow::on_button_save_depthmap_clicked() // save XML and image depthma
     if (!write) { // problem ?
         QApplication::restoreOverrideCursor(); // Restore cursor
         QMessageBox::critical(this, "File error",
-                              "There was a problem saving the depthmap mask image file");
+            "There was a problem saving the depthmap mask image file");
         return;
     }
 
@@ -531,7 +554,7 @@ void MainWindow::on_button_save_depthmap_clicked() // save XML and image depthma
     if (!write) { // problem ?
         QApplication::restoreOverrideCursor(); // Restore cursor
         QMessageBox::critical(this, "File error",
-                              "There was a problem saving the depthmap image file");
+            "There was a problem saving the depthmap image file");
         return;
     }
 
@@ -539,7 +562,7 @@ void MainWindow::on_button_save_depthmap_clicked() // save XML and image depthma
     if (!fs.isOpened()) { // problem ?
         QApplication::restoreOverrideCursor(); // Restore cursor
         QMessageBox::critical(this, "File error",
-                              "There was a problem writing the depthmap data file");
+            "There was a problem writing the depthmap data file");
         return;
     }
 
@@ -590,8 +613,9 @@ void MainWindow::on_button_load_depthmap_clicked() // load depthmap XML file
 {
     QString filename = QFileDialog::getOpenFileName(this, "Load depthmap from XML file...", QString::fromStdString(basedir + "*-depthmap-data.xml"), "*.xml *.XML"); // file name
 
-    if (filename.isNull() || filename.isEmpty()) // cancel ?
+    if (filename.isNull() || filename.isEmpty()) { // cancel ?
         return;
+    }
 
     QApplication::setOverrideCursor(Qt::WaitCursor); // wait cursor
     qApp->processEvents();
@@ -607,25 +631,29 @@ void MainWindow::on_button_load_depthmap_clicked() // load depthmap XML file
     basefile = basefile.substr(found+1); // delete ending slash*/
     ChangeBaseDir(filename);
     size_t pos = basefile.find("-depthmap-data");
-    if (pos != std::string::npos)
+    if (pos != std::string::npos) {
         basefile.erase(pos, basefile.length());
+    }
     else { // doesn't end with "-depthmap-data"
         QMessageBox::critical(this, "File name error",
-                              "There was a problem reading the depthmap file:\nit must end with ''-depthmap-data.xml''");
+            "There was a problem reading the depthmap file:\nit must end with ''-depthmap-data.xml''");
         DisableGUI(); // problem : reset GUI elements and exit
         return;
     }
 
     std::string filesession = filename.toUtf8().constData(); // base file name
     pos = filesession.find("-depthmap-data.xml"); // ends with "depthmap-data.xml"
-    if (pos != std::string::npos) filesession.erase(pos, filesession.length());
+    if (pos != std::string::npos) {
+        filesession.erase(pos, filesession.length());
+    }
 
     depthmap = cv::imread(filesession + "-depthmap-mask.png", IMREAD_COLOR); // load depthmap mask
-    if (depthmap.channels() > 1)
+    if (depthmap.channels() > 1) {
         cvtColor(depthmap, depthmap, COLOR_BGR2GRAY);
+    }
     if (depthmap.empty()) { // problem ?
         QMessageBox::critical(this, "File error",
-                              "There was a problem reading the depthmap mask file:\nit must end with ''-depthmap-mask.png''");
+            "There was a problem reading the depthmap mask file:\nit must end with ''-depthmap-mask.png''");
         DisableGUI();
         return;
     }
@@ -634,14 +662,14 @@ void MainWindow::on_button_load_depthmap_clicked() // load depthmap XML file
 
     if (image.empty()) {
         QMessageBox::critical(this, "File error",
-                                    "There was a problem reading the depthmap image file:\nit must end with ''-depthmap-image.png''");
+            "There was a problem reading the depthmap image file:\nit must end with ''-depthmap-image.png''");
         DisableGUI();
         return;
     }
 
     if ((image.cols != depthmap.cols) | (image.rows != depthmap.rows)) { // image and mask sizes not the same -> not good !
         QMessageBox::critical(this, "Image size error",
-                                    "The image and mask image size (width and height) differ");
+            "The image and mask image size (width and height) differ");
         DisableGUI();
         return;
     }
@@ -654,7 +682,7 @@ void MainWindow::on_button_load_depthmap_clicked() // load depthmap XML file
 
     if (!fs.isOpened()) { // file not opened, not handled by above instructions
         QMessageBox::critical(this, "File error",
-                              "There was a problem reading the depthmap data file:\nit must end with ''-depthmap-data.xml''");
+            "There was a problem reading the depthmap data file:\nit must end with ''-depthmap-data.xml''");
         DisableGUI();
         return;
     }
@@ -663,12 +691,12 @@ void MainWindow::on_button_load_depthmap_clicked() // load depthmap XML file
     try { // try to read labels data
         fs["Labels"] >> labels_temp; // load labels
     }
-    catch( cv::Exception& e ) // problem ?
+    catch (cv::Exception& e) // problem ?
     {
         const char* err_msg = e.what(); // get error from openCV
         QMessageBox::critical(this, "XML Depthmap file error",
-                              "There was a problem reading the depthmap XML file\nThe \"Labels\" data is wrong\nError:\n"
-                              + QString(err_msg));
+            "There was a problem reading the depthmap XML file\nThe \"Labels\" data is wrong\nError:\n"
+            + QString(err_msg));
         DisableGUI();
         return;
     }
@@ -680,7 +708,7 @@ void MainWindow::on_button_load_depthmap_clicked() // load depthmap XML file
 
     if (nbLabels <= 0) { // no labels ?
         QMessageBox::critical(this, "XML Depthmap file error",
-                              "There was a problem reading the depthmap XML file\nThe data is wrong");
+            "There was a problem reading the depthmap XML file\nThe data is wrong");
         DisableGUI();
         return;
     }
@@ -688,22 +716,22 @@ void MainWindow::on_button_load_depthmap_clicked() // load depthmap XML file
     ui->listWidget_labels->blockSignals(true); // don't trigger events when populating labels list
 
     for (int i = 0; i < nbLabels; i++) { // for each label to load
-        std::string name ="###Error###"; // init default values, no error handling this time, the user should see if there was a problem
+        std::string name = "###Error###"; // init default values, no error handling this time, the user should see if there was a problem
         int num = -1;
-        cv::Point point = cv::Point(0,0);
+        cv::Point point = cv::Point(0, 0);
         int color = 255;
         int gtype = 0;
         int gcurve = 0;
 
-        QListWidgetItem *item = new QListWidgetItem (); // create new label item
+        auto *item = new QListWidgetItem(); // create new label item
         std::string field;
 
         field = "LabelId" + std::to_string(i); // read label id
-        fs [field] >> num;
+        fs[field] >> num;
         item->setData(Qt::UserRole, num); // set it to current label
 
         field = "LabelName" + std::to_string(i); // read label name
-        fs [field] >> name;
+        fs[field] >> name;
         item->setText(QString::fromStdString(name)); // set name to current label
 
         item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled); // item enabled and selectable
@@ -712,27 +740,27 @@ void MainWindow::on_button_load_depthmap_clicked() // load depthmap XML file
         item->setSelected(false); // don't select it !
 
         field = "GradientType" + std::to_string(i);
-        fs [field] >> gtype; // load gradient type
+        fs[field] >> gtype; // load gradient type
         gradients[i].gradient = gradientType(gtype);
 
         field = "GradientCurve" + std::to_string(i);
-        fs [field] >> gcurve; // load curve type
+        fs[field] >> gcurve; // load curve type
         gradients[i].curve = curveType(gcurve);
 
         field = "GradientBeginColor" + std::to_string(i);
-        fs [field] >> color; // load gradient begin color
+        fs[field] >> color; // load gradient begin color
         gradients[i].beginColor = color;
 
         field = "GradientEndColor" + std::to_string(i);
-        fs [field] >> color; // load gradient end color
+        fs[field] >> color; // load gradient end color
         gradients[i].endColor = color;
 
         field = "GradientBeginPoint" + std::to_string(i);
-        fs [field] >> point; // load gradient begin point
+        fs[field] >> point; // load gradient begin point
         gradients[i].beginPoint = point;
 
         field = "GradientEndPoint" + std::to_string(i);
-        fs [field] >> point; // load gradient end point
+        fs[field] >> point; // load gradient end point
         gradients[i].endPoint = point;
     }
 
@@ -762,13 +790,17 @@ void MainWindow::on_button_load_depthmap_clicked() // load depthmap XML file
 
     double zoomX = double(ui->label_viewport->width()) / image.cols; // find best fit for the viewport, try vertical and horizontal ratios
     double zoomY = double(ui->label_viewport->height()) / image.rows;
-    if (zoomX < zoomY) zoom = zoomX; // the lowest fits the view
-        else zoom = zoomY;
+    if (zoomX < zoomY) {
+        zoom = zoomX; // the lowest fits the view
+    }
+    else {
+        zoom = zoomY;
+    }
     oldZoom = zoom; // zoom already good
     ShowZoomValue(); // display current zoom
     viewport = Rect(0, 0, image.cols, image.rows); // update viewport size
 
-    thumbnail = ResizeImageAspectRatio(image, cv::Size(ui->label_thumbnail->width(),ui->label_thumbnail->height())); // create thumbnail
+    thumbnail = ResizeImageAspectRatio(image, cv::Size(ui->label_thumbnail->width(), ui->label_thumbnail->height())); // create thumbnail
 
     ShowThumbnail(); // update thumbnail view
 
@@ -790,10 +822,11 @@ void MainWindow::on_button_load_depthmap_clicked() // load depthmap XML file
 void MainWindow::on_button_load_rgbd_clicked() // load previous session
 {
     QString filename = QFileDialog::getOpenFileName(this, "Load RGB+D : image...", QString::fromStdString(basedir),
-                                                    "Images (*.jpg *.JPG *.jpeg *.JPEG *.jp2 *.JP2 *.png *.PNG *.tif *.TIF *.tiff *.TIFF *.bmp *.BMP)"); // reference image file name
+        "Images (*.jpg *.JPG *.jpeg *.JPEG *.jp2 *.JP2 *.png *.PNG *.tif *.TIF *.tiff *.TIFF *.bmp *.BMP)"); // reference image file name
 
-    if (filename.isNull() || filename.isEmpty()) // cancel ?
+    if (filename.isNull() || filename.isEmpty()) { // cancel ?
         return;
+    }
 
     QApplication::setOverrideCursor(Qt::WaitCursor); // wait cursor
     qApp->processEvents();
@@ -818,19 +851,22 @@ void MainWindow::on_button_load_rgbd_clicked() // load previous session
     }
 
     filename = QFileDialog::getOpenFileName(this, "Load RGB+D : depthmap...", QString::fromStdString(basedir),
-                                            "Images (*.jpg *.JPG *.jpeg *.JPEG *.jp2 *.JP2 *.png *.PNG *.tif *.TIF *.tiff *.TIFF *.bmp *.BMP)"); // depthmap file name
+        "Images (*.jpg *.JPG *.jpeg *.JPEG *.jp2 *.JP2 *.png *.PNG *.tif *.TIF *.tiff *.TIFF *.bmp *.BMP)"); // depthmap file name
     ChangeBaseDir(filename);
     filesession = filename.toUtf8().constData(); // base file name
 
     depthmap = cv::imread(filesession, IMREAD_COLOR); // load depthmap
-    if (depthmap.channels() > 1)
+    if (depthmap.channels() > 1) {
         cvtColor(depthmap, depthmap, COLOR_BGR2GRAY);
+    }
 
     if ((depthmap.empty()) | (image.cols != depthmap.cols) | (image.rows != depthmap.rows)) { // if image and depthmap sizes differ or depthmap empty
-        if ((image.cols != depthmap.cols) | (image.rows != depthmap.rows)) // sizes differ
+        if ((image.cols != depthmap.cols) | (image.rows != depthmap.rows)) { // sizes differ
             QMessageBox::critical(this, "Image size error", "The image and depthmap size (width and height) must be the same.");
-        else
+        }
+        else {
             QMessageBox::critical(this, "File error", "There was a problem reading the depthmap file");
+        }
         DisableGUI();
         return;
     }
@@ -865,13 +901,17 @@ void MainWindow::on_button_load_rgbd_clicked() // load previous session
 
     double zoomX = double(ui->label_viewport->width()) / image.cols; // find best fit for viewport, try vertical and horizontal ratios
     double zoomY = double(ui->label_viewport->height()) / image.rows;
-    if (zoomX < zoomY) zoom = zoomX; // the lowest fits the view
-        else zoom = zoomY;
+    if (zoomX < zoomY) {
+        zoom = zoomX; // the lowest fits the view
+    }
+    else {
+        zoom = zoomY;
+    }
     oldZoom = zoom; // zoom already set
     ShowZoomValue(); // display current zoom
     viewport = Rect(0, 0, image.cols, image.rows); // update viewport size
 
-    thumbnail = ResizeImageAspectRatio(image, cv::Size(ui->label_thumbnail->width(),ui->label_thumbnail->height())); // create thumbnail
+    thumbnail = ResizeImageAspectRatio(image, cv::Size(ui->label_thumbnail->width(), ui->label_thumbnail->height())); // create thumbnail
 
     CopyFromImage(image, viewport).copyTo(disp_color); // copy only the viewport part of image
     QPixmap D;
@@ -897,14 +937,15 @@ void MainWindow::on_button_save_ply_clicked() // save XML and image depthmap fil
 {
     if (!loaded) { // nothing loaded yet = get out
         QMessageBox::warning(this, "Nothing to save",
-                                 "Not now!\n\nBefore anything else, load a Segmentation or Depthmap project");
+            "Not now!\n\nBefore anything else, load a Segmentation or Depthmap project");
         return;
     }
 
     QString filename = QFileDialog::getSaveFileName(this, "Save mesh to PLY file...", "./" + QString::fromStdString(basedir + basefile + ".ply"), "*.ply *.PLY"); // filename
 
-    if (filename.isNull() || filename.isEmpty()) // cancel ?
+    if (filename.isNull() || filename.isEmpty()) { // cancel ?
         return;
+    }
 
     QApplication::setOverrideCursor(Qt::WaitCursor); // wait cursor
     qApp->processEvents();
@@ -953,8 +994,12 @@ void MainWindow::on_verticalScrollBar_viewport_valueChanged()  // update viewpor
 void MainWindow::ZoomPlus() // zoom in
 {
     int z = 0;
-    while (zoom >= zooms[z]) z++; // from lowest to highest value find the next one
-    if (z == num_zooms) z--; // maximum
+    while (zoom >= zooms[z]) {
+        z++; // from lowest to highest value find the next one
+    }
+    if (z == num_zooms) {
+        z--; // maximum
+    }
 
     if (zoom != zooms[z]) { // zoom changed ?
         QApplication::setOverrideCursor(Qt::SizeVerCursor); // zoom cursor
@@ -970,8 +1015,12 @@ void MainWindow::ZoomPlus() // zoom in
 void MainWindow::ZoomMinus() // zoom out
 {
     int z = num_zooms;
-    while (zoom <= zooms[z]) z--; // from highest to lowest value find the next one
-    if (z == 0) z++; // minimum
+    while (zoom <= zooms[z]) {
+        z--; // from highest to lowest value find the next one
+    }
+    if (z == 0) {
+        z++; // minimum
+    }
 
     if (zoom != zooms[z]) { // zoom changed ?
         QApplication::setOverrideCursor(Qt::SizeVerCursor); // zoom cursor
@@ -1002,8 +1051,12 @@ void MainWindow::on_pushButton_zoom_fit_clicked() // zoom fit from button
     oldZoom = zoom;
     double zoomX = double(ui->label_viewport->width()) / image.cols; // find the best value of zoom
     double zoomY = double(ui->label_viewport->height()) / image.rows;
-    if (zoomX < zoomY) zoom = zoomX; // less = fit view borders
-        else zoom = zoomY;
+    if (zoomX < zoomY) {
+        zoom = zoomX; // less = fit view borders
+    }
+    else {
+        zoom = zoomY;
+    }
 
     QApplication::setOverrideCursor(Qt::SizeVerCursor); // zoom cursor
     qApp->processEvents();
@@ -1024,48 +1077,50 @@ void MainWindow::on_pushButton_zoom_100_clicked() // zoom 100% from button
 
 void MainWindow::ShowZoomValue() // display zoom percentage in ui
 {
-    ui->label_zoom->setText(QString::number(int(zoom * 100)) +"%"); // show new zoom value in percent
+    ui->label_zoom->setText(QString::number(int(zoom * 100)) + "%"); // show new zoom value in percent
 }
 
 //// Gradients signals
 
 void MainWindow::ShowGradient() // show gradient example from current label
 {
-    if (!loaded) // no need for that if nothing is loaded !
+    if (!loaded) { // no need for that if nothing is loaded !
         return;
+    }
 
-    Mat gradient= cv::Mat::zeros(ui->label_gradient->height(), ui->label_gradient->width(), CV_8UC1); // final image to display
+    Mat gradient = cv::Mat::zeros(ui->label_gradient->height(), ui->label_gradient->width(), CV_8UC1); // final image to display
     Mat1b msk = cv::Mat::zeros(ui->label_gradient->height(), ui->label_gradient->width(), CV_8UC1); // the gradient needs a mask
     msk = 255; // fill the mask with non-zero values
 
     int row = ui->listWidget_labels->currentRow(); // get current label
 
-    cv::Point beginPoint, endPoint; // begin and end points will change with gradient example type
+    cv::Point beginPoint;
+    cv::Point endPoint; // begin and end points will change with gradient example type
 
     switch (gradients[row].gradient) {
-        case gradient_flat: {
-            break;
-        }
-        case gradient_linear: {
-            beginPoint = cv::Point(0, 0);
-            endPoint = cv::Point(ui->label_gradient->width(), ui->label_gradient->height());
-            break;
-        }
-        case gradient_doubleLinear: {
-            beginPoint = cv::Point(ui->label_gradient->width() / 2, ui->label_gradient->height() / 2);
-            endPoint = cv::Point(0, 0);
-            break;
-        }
-        case gradient_radial: {
-            beginPoint = cv::Point(ui->label_gradient->width() / 2, ui->label_gradient->height() / 2);
-            endPoint = cv::Point(ui->label_gradient->width() / 2, -20);
-            break;
-        }
+    case gradient_flat: {
+        break;
+    }
+    case gradient_linear: {
+        beginPoint = cv::Point(0, 0);
+        endPoint = cv::Point(ui->label_gradient->width(), ui->label_gradient->height());
+        break;
+    }
+    case gradient_doubleLinear: {
+        beginPoint = cv::Point(ui->label_gradient->width() / 2, ui->label_gradient->height() / 2);
+        endPoint = cv::Point(0, 0);
+        break;
+    }
+    case gradient_radial: {
+        beginPoint = cv::Point(ui->label_gradient->width() / 2, ui->label_gradient->height() / 2);
+        endPoint = cv::Point(ui->label_gradient->width() / 2, -20);
+        break;
+    }
     }
     GradientFillGray(gradients[row].gradient, gradient, msk,
-                     beginPoint, endPoint,
-                     gradients[row].beginColor, gradients[row].endColor,
-                     ui->listWidget_gradient_curve->currentRow()); // fill shape with gray gradient
+        beginPoint, endPoint,
+        gradients[row].beginColor, gradients[row].endColor,
+        ui->listWidget_gradient_curve->currentRow()); // fill shape with gray gradient
 
     cvtColor(gradient, gradient, COLOR_GRAY2BGR);
     QPixmap D;
@@ -1074,50 +1129,50 @@ void MainWindow::ShowGradient() // show gradient example from current label
 
     QString file;
     switch (ui->listWidget_gradient_curve->currentRow()) { // file in .qrc resource needed to display curve shape
-        case curve_linear: {
-            file = ":/icons/curve-linear.png";
-            break;
-        }
-        case curve_cosinus: {
-            file = ":/icons/curve-cosinus.png";
-            break;
-        }
-        case curve_cosinus2: {
-            file = ":/icons/curve-cosinus2.png";
-            break;
-        }
-        case curve_power2: {
-            file = ":/icons/curve-power2.png";
-            break;
-        }
-        case curve_power3: {
-            file = ":/icons/curve-power3.png";
-            break;
-        }
-        case curve_sigmoid: {
-            file = ":/icons/curve-sigmoid.png";
-            break;
-        }
-        case curve_cos2power2: {
-            file = ":/icons/curve-cos2power2.png";
-            break;
-        }
-        case curve_cos2sqrt: {
-            file = ":/icons/curve-cos2sqrt.png";
-            break;
-        }
-        case curve_undulate: {
-            file = ":/icons/curve-undulate.png";
-            break;
-        }
-        case curve_undulate2: {
-            file = ":/icons/curve-undulate2.png";
-            break;
-        }
-        case curve_undulate3: {
-            file = ":/icons/curve-undulate3.png";
-            break;
-        }
+    case curve_linear: {
+        file = ":/icons/curve-linear.png";
+        break;
+    }
+    case curve_cosinus: {
+        file = ":/icons/curve-cosinus.png";
+        break;
+    }
+    case curve_cosinus2: {
+        file = ":/icons/curve-cosinus2.png";
+        break;
+    }
+    case curve_power2: {
+        file = ":/icons/curve-power2.png";
+        break;
+    }
+    case curve_power3: {
+        file = ":/icons/curve-power3.png";
+        break;
+    }
+    case curve_sigmoid: {
+        file = ":/icons/curve-sigmoid.png";
+        break;
+    }
+    case curve_cos2power2: {
+        file = ":/icons/curve-cos2power2.png";
+        break;
+    }
+    case curve_cos2sqrt: {
+        file = ":/icons/curve-cos2sqrt.png";
+        break;
+    }
+    case curve_undulate: {
+        file = ":/icons/curve-undulate.png";
+        break;
+    }
+    case curve_undulate2: {
+        file = ":/icons/curve-undulate2.png";
+        break;
+    }
+    case curve_undulate3: {
+        file = ":/icons/curve-undulate3.png";
+        break;
+    }
     }
 
     ui->label_curve_image->setPixmap(QPixmap::fromImage(QImage(file), Qt::AutoColor)); // show curve shape
@@ -1125,8 +1180,9 @@ void MainWindow::ShowGradient() // show gradient example from current label
 
 void MainWindow::on_radioButton_flat_clicked() // flat gradient selected
 {
-    if (!loaded) // no need for that if file not loaded !
+    if (!loaded) { // no need for that if file not loaded !
         return;
+    }
 
     if (ui->radioButton_flat->isChecked()) {
         BlockGradientsSignals(true);
@@ -1134,13 +1190,14 @@ void MainWindow::on_radioButton_flat_clicked() // flat gradient selected
         BlockGradientsSignals(false);
         ShowGradient(); // show gradient example
         ChangeLabelGradient(); // apply effect
-    }  
+    }
 }
 
 void MainWindow::on_radioButton_linear_clicked() // linear gradient selected
 {
-    if (!loaded)
+    if (!loaded) {
         return;
+    }
 
     if (ui->radioButton_linear->isChecked()) {
         BlockGradientsSignals(true);
@@ -1153,8 +1210,9 @@ void MainWindow::on_radioButton_linear_clicked() // linear gradient selected
 
 void MainWindow::on_radioButton_double_linear_clicked() // bi-linear gradient selected
 {
-    if (!loaded)
+    if (!loaded) {
         return;
+    }
 
     if (ui->radioButton_double_linear->isChecked()) {
         BlockGradientsSignals(true);
@@ -1167,8 +1225,9 @@ void MainWindow::on_radioButton_double_linear_clicked() // bi-linear gradient se
 
 void MainWindow::on_radioButton_radial_clicked() // radial gradient selected
 {
-    if (!loaded)
+    if (!loaded) {
         return;
+    }
 
     if (ui->radioButton_radial->isChecked()) {
         BlockGradientsSignals(true);
@@ -1181,8 +1240,9 @@ void MainWindow::on_radioButton_radial_clicked() // radial gradient selected
 
 void MainWindow::on_horizontalSlider_begin_valueChanged(int value) // begin color for gradient changed
 {
-    if (!loaded) // not needed if file not loaded !
+    if (!loaded) { // not needed if file not loaded !
         return;
+    }
 
     BlockGradientsSignals(true);
     gradients[ui->listWidget_labels->currentRow()].beginColor = value; // change value in gradients array
@@ -1195,8 +1255,9 @@ void MainWindow::on_horizontalSlider_begin_valueChanged(int value) // begin colo
 
 void MainWindow::on_horizontalSlider_end_valueChanged(int value) // end color for gradient changed
 {
-    if (!loaded)
+    if (!loaded) {
         return;
+    }
 
     BlockGradientsSignals(true);
     gradients[ui->listWidget_labels->currentRow()].endColor = value;
@@ -1207,10 +1268,11 @@ void MainWindow::on_horizontalSlider_end_valueChanged(int value) // end color fo
     ChangeLabelGradient();
 }
 
-void MainWindow::on_listWidget_gradient_curve_currentItemChanged(QListWidgetItem *currentItem) // gradient curve shape changed
+void MainWindow::on_listWidget_gradient_curve_currentItemChanged(QListWidgetItem * /*currentItem*/) // gradient curve shape changed
 {
-    if (!loaded) // not needed if file not loaded !
+    if (!loaded) { // not needed if file not loaded !
         return;
+    }
 
     BlockGradientsSignals(true);
     gradients[ui->listWidget_labels->currentRow()].curve = curveType(ui->listWidget_gradient_curve->currentRow()); // change value in gradients array
@@ -1257,7 +1319,7 @@ void MainWindow::on_checkBox_3d_anaglyph_clicked() // activate or not anaglyph v
     ui->openGLWidget_3d->update(); // view 3D scene
 }
 
-void MainWindow::on_comboBox_3d_tint_currentIndexChanged(int index) // change tint of image in 3D scene
+void MainWindow::on_comboBox_3d_tint_currentIndexChanged(int  /*index*/) // change tint of image in 3D scene
 {
     Mat image_temp = AnaglyphTint(image, ui->comboBox_3d_tint->currentIndex());
     ui->openGLWidget_3d->image3D = GammaCorrection(image_temp, ui->doubleSpinBox_gamma->value());
@@ -1266,7 +1328,7 @@ void MainWindow::on_comboBox_3d_tint_currentIndexChanged(int index) // change ti
     ui->openGLWidget_3d->update(); // view 3D scene
 }
 
-void MainWindow::on_doubleSpinBox_gamma_valueChanged(double value)
+void MainWindow::on_doubleSpinBox_gamma_valueChanged(double  /*value*/)
 {
     on_comboBox_3d_tint_currentIndexChanged(0);
 }
@@ -1282,19 +1344,20 @@ void MainWindow::on_checkBox_3d_blur_clicked() // blur depthmap for 3D view
     if (ui->checkBox_3d_blur->isChecked()) { // blur activated
         Mat depthmap3D_temp;
         cv::GaussianBlur(depthmap, depthmap3D_temp,
-                         Size(ui->horizontalSlider_blur_amount->value() * 2 + 1,
-                              ui->horizontalSlider_blur_amount->value() * 2 + 1), 0, 0); // gaussian blur image
+            Size(ui->horizontalSlider_blur_amount->value() * 2 + 1,
+                ui->horizontalSlider_blur_amount->value() * 2 + 1), 0, 0); // gaussian blur image
         ui->openGLWidget_3d->depthmap3D = depthmap3D_temp; // copy blurred depthmap
     }
-    else // no blur
+    else { // no blur
         ui->openGLWidget_3d->depthmap3D = depthmap; // copy original depthmap
+    }
 
     ui->openGLWidget_3d->updateVertices3D = true; // recompute 3D scene
     ui->openGLWidget_3d->updateAllVertices3D = true; // for all image
     ui->openGLWidget_3d->update(); // view 3D scene
 }
 
-void MainWindow::on_horizontalSlider_blur_amount_valueChanged(int value) // change blur amount for 3D scene
+void MainWindow::on_horizontalSlider_blur_amount_valueChanged(int  /*value*/) // change blur amount for 3D scene
 {
     on_checkBox_3d_blur_clicked(); // view 3D scene with blur
 }
@@ -1354,8 +1417,9 @@ void MainWindow::on_spinBox_3d_frames_valueChanged(int value) // change number o
         ui->checkBox_3d_infinite_cycle->setChecked(false); // uncheck infinite button
         ui->checkBox_3d_double_cycle->setChecked(false); // uncheck double cycle button
     }
-    else // not unique view
+    else { // not unique view
         ui->checkBox_3d_capture_unique->setChecked(false); // uncheck unique button
+    }
 }
 
 void MainWindow::on_checkBox_3d_capture_unique_clicked() // only one frame for 3D animation
@@ -1386,8 +1450,9 @@ void MainWindow::on_checkBox_3d_capture_fullscreen_clicked() // activate fullscr
         QRect screenSize = qApp->desktop()->availableGeometry(qApp->desktop()->primaryScreen()); // get screen size in which app is run
         ui->spinBox_3d_resolution->setValue(screenSize.width()); // set screen size width to 3D resolution
     }
-    else // not fullscreen
+    else { // not fullscreen
         ui->spinBox_3d_resolution->setValue(ui->openGLWidget_3d->width()); // width = widget width
+    }
 }
 
 void MainWindow::on_checkBox_3d_double_cycle_clicked() // activate to-and-from cycle for 3D animation
@@ -1411,12 +1476,15 @@ void MainWindow::on_checkBox_3d_capture_clicked() // launch 3D animation and sav
     if (ui->checkBox_3d_save_files->isChecked()) { // save to image option activated ?
         QString filename = QFileDialog::getSaveFileName(this, "Save 3D capture to images...", "./" + QString::fromStdString(basedir + basefile + "-capture.png"), "*.png *.PNG"); // get filename
 
-        if (filename.isNull() || filename.isEmpty()) // cancel ?
+        if (filename.isNull() || filename.isEmpty()) { // cancel ?
             return;
+        }
 
         filesession = filename.toUtf8().constData(); // base file name
         size_t pos = filesession.find(".png");
-        if (pos != std::string::npos) filesession.erase(pos, filesession.length()); // delete extension
+        if (pos != std::string::npos) {
+            filesession.erase(pos, filesession.length()); // delete extension
+        }
     }
 
     QApplication::setOverrideCursor(Qt::WaitCursor); // wait cursor
@@ -1448,23 +1516,31 @@ void MainWindow::on_checkBox_3d_capture_clicked() // launch 3D animation and sav
     //bool circular = ui->checkBox_3d_circular->isChecked(); // circular ?
     double middleX = double(ui->spinBox_3d_x_angle->value()) / 2; // halves of angles
     double middleY = double(ui->spinBox_3d_y_angle->value()) / 2;
-    double xSector, ySector;
-        xSector = double(ui->spinBox_3d_x_angle->value()) / (nb_frames); // angle value of one sector
-        ySector = double(ui->spinBox_3d_y_angle->value()) / (nb_frames);
+    double xSector;
+    double ySector;
+    xSector = double(ui->spinBox_3d_x_angle->value()) / (nb_frames); // angle value of one sector
+    ySector = double(ui->spinBox_3d_y_angle->value()) / (nb_frames);
     int begin; // 1st frame value
-    if (ui->checkBox_3d_double_cycle->isChecked()) // 1st frame value depends on mode (circular, double cycle)
+    if (ui->checkBox_3d_double_cycle->isChecked()) { // 1st frame value depends on mode (circular, double cycle)
         begin = -nb_frames;
-            else begin = 0;
+    }
+    else {
+        begin = 0;
+    }
     abort_3d = false; // used to interrupt capture
     int counter = 1; // used to save images only once if infinite cycle set
     int progress = 1; // for progress bar
     // progress bar init
-    if (ui->checkBox_3d_double_cycle->isChecked()) // double cycle ?
+    if (ui->checkBox_3d_double_cycle->isChecked()) { // double cycle ?
         ui->progressBar_3d_capture->setMaximum(nb_frames * 2); // max of progress bar is twice the amount
+    }
     else // not double cycle
-        if (!ui->checkBox_3d_capture_unique->isChecked()) // more than 1 frame ?
+        if (!ui->checkBox_3d_capture_unique->isChecked()) { // more than 1 frame ?
             ui->progressBar_3d_capture->setMaximum(1); // max of progress bar is the number of frames
-                else ui->progressBar_3d_capture->setMaximum(1); // else max of progress bar is 1 (setting it to 0 makes the progress bar shuffle)
+        }
+        else {
+            ui->progressBar_3d_capture->setMaximum(1); // else max of progress bar is 1 (setting it to 0 makes the progress bar shuffle)
+        }
     ui->progressBar_3d_capture->setValue(0); // 0% done in progress bar
 
     // compute frames
@@ -1484,61 +1560,80 @@ void MainWindow::on_checkBox_3d_capture_clicked() // launch 3D animation and sav
 
         qApp->processEvents(); // force refresh of GUI
     }
-    else
+    else {
         for (int frame = begin; frame <= nb_frames; frame++) { // for each frame
             if (abort_3d) { // abort ?
                 //QMessageBox::critical(this, "3D capture", "Capture was interrupted");
                 ui->progressBar_3d_capture->setValue(0); // reset progress bar and exit
                 break;
             }
-            double xAngle, yAngle;
+            double xAngle;
+            double yAngle;
             if (ui->checkBox_3d_circular_vertical->isChecked()) {
                 int frm;
-                if (frame < 0)
+                if (frame < 0) {
                     frm = -frame;
-                else
+                }
+                else {
                     frm = frame;
-                if (frm == 0) // compute current angles of view on x and y axes for each interval
+                }
+                if (frm == 0) { // compute current angles of view on x and y axes for each interval
                     xAngle = -middleX;
-                else if (frm < double(nb_frames) / 4) // 1st quarter
+                }
+                else if (frm < double(nb_frames) / 4) { // 1st quarter
                     xAngle = xSector * double(frm) * 2 - middleX;
-                else if (frm < double(nb_frames) / 2) // 2nd quarter
+                }
+                else if (frm < double(nb_frames) / 2) { // 2nd quarter
                     xAngle = xSector * double(frm) * 2 - middleX;
-                else if (frm < double(nb_frames) * 3 / 4) // 3rd quarter
+                }
+                else if (frm < double(nb_frames) * 3 / 4) { // 3rd quarter
                     xAngle = middleX - xSector * (double(frm) - double(nb_frames) / 2) * 2;
-                else // 4th quarter
+                }
+                else { // 4th quarter
                     xAngle = middleX - xSector * (double(frm) - double(nb_frames) / 2) * 2;
+                }
             }
             if (ui->checkBox_3d_circular_horizontal->isChecked()) {
                 int frm;
-                if (frame < 0)
+                if (frame < 0) {
                     frm = nb_frames + frame;
-                else
+                }
+                else {
                     frm = frame;
-                if (frm == 0) // compute current angles of view on x and y axes for each interval
+                }
+                if (frm == 0) { // compute current angles of view on x and y axes for each interval
                     yAngle = 0;
-                else if (frm < double(nb_frames) / 4) // 1st quarter
+                }
+                else if (frm < double(nb_frames) / 4) { // 1st quarter
                     yAngle = ySector * double(frm) * 2;
-                else if (frm < double(nb_frames) / 2) // 2nd quarter
+                }
+                else if (frm < double(nb_frames) / 2) { // 2nd quarter
                     yAngle = middleY - ySector * (double(frm) - double(nb_frames) / 4) * 2;
-                else if (frm < double(nb_frames) * 3 / 4) // 3rd quarter
+                }
+                else if (frm < double(nb_frames) * 3 / 4) { // 3rd quarter
                     yAngle = middleY - ySector * (double(frm) - double(nb_frames) / 4) * 2;
-                else // 4th quarter
+                }
+                else { // 4th quarter
                     yAngle = ySector * (double(frm) - double(nb_frames) * 3 / 4) * 2 - middleY;
+                }
             }
             if (!ui->checkBox_3d_circular_vertical->isChecked()) { // vertical wobble
                 xAngle = xSector * double(frame) - middleX; // compute angles
-                if (frame < 0) // in double cycle mode angle is not the same for "negative" frames
+                if (frame < 0) { // in double cycle mode angle is not the same for "negative" frames
                     xAngle = double(-ui->spinBox_3d_x_angle->value()) - xAngle;
-                if (ui->checkBox_3d_double_cycle->isChecked()) // in double cycle mode invert angles
+                }
+                if (ui->checkBox_3d_double_cycle->isChecked()) { // in double cycle mode invert angles
                     xAngle = -xAngle;
+                }
             }
             if (!ui->checkBox_3d_circular_horizontal->isChecked()) { // horizontal wobble
                 yAngle = ySector * double(frame) - middleY;
-                if (frame < 0) // in double cycle mode angle is not the same for "negative" frames
+                if (frame < 0) { // in double cycle mode angle is not the same for "negative" frames
                     yAngle = double(-ui->spinBox_3d_y_angle->value()) - yAngle;
-                if (ui->checkBox_3d_double_cycle->isChecked()) // in double cycle mode invert angles
+                }
+                if (ui->checkBox_3d_double_cycle->isChecked()) { // in double cycle mode invert angles
                     yAngle = -yAngle;
+                }
             }
 
             ui->openGLWidget_3d->xRot = xAngle; // set angles in 3D scene
@@ -1562,35 +1657,41 @@ void MainWindow::on_checkBox_3d_capture_clicked() // launch 3D animation and sav
             qApp->processEvents(); // force refresh of GUI
 
             if ((ui->checkBox_3d_infinite_cycle->isChecked()) & (frame == nb_frames)) { // infinite cycle and end of animation reached ?
-                if (ui->checkBox_3d_double_cycle->isChecked())
+                if (ui->checkBox_3d_double_cycle->isChecked()) {
                     frame = -frame; // return to 1st frame
-                else
+                }
+                else {
                     frame = 0;
+                }
                 counter++; // end of animation reached = no more writing image to file
             }
 
             progress++; // increase value for progress bar - the 1st time progress is already equal to 1 that's why it is increased after updating the progress bar
-            if (progress > 10000) // if infinite loop don't go too far
+            if (progress > 10000) { // if infinite loop don't go too far
                 progress = nb_frames + 1; // reset progress value to just over 100%
+            }
         }
+    }
 
     ui->openGLWidget_3d->xRot = rX; // restore initial 3D scene values
     ui->openGLWidget_3d->yRot = rY;
     ui->openGLWidget_3d->zRot = rZ;
 
-    if (ui->checkBox_3d_capture_fullscreen->isChecked()) // full screen ?
+    if (ui->checkBox_3d_capture_fullscreen->isChecked()) { // full screen ?
         this->setWindowFlags((((windowFlags() | Qt::CustomizeWindowHint)
-                                & ~Qt::WindowCloseButtonHint) | Qt::WindowMinMaxButtonsHint));
-        show();
-        ui->openGLWidget_3d->move(QPoint(saveXOpenGL, saveYOpenGL)); // move back openGL widget
-        ui->spinBox_3D_rotate_x->raise(); // bring back controls over 3D view
-        ui->spinBox_3D_rotate_y->raise();
-        ui->horizontalSlider_3D_rotate_y->raise();
-        ui->verticalSlider_3D_rotate_x->raise();
-        ui->button_3d_reset->raise();
+            & ~Qt::WindowCloseButtonHint) | Qt::WindowMinMaxButtonsHint));
+    }
+    show();
+    ui->openGLWidget_3d->move(QPoint(saveXOpenGL, saveYOpenGL)); // move back openGL widget
+    ui->spinBox_3D_rotate_x->raise(); // bring back controls over 3D view
+    ui->spinBox_3D_rotate_y->raise();
+    ui->horizontalSlider_3D_rotate_y->raise();
+    ui->verticalSlider_3D_rotate_x->raise();
+    ui->button_3d_reset->raise();
     ui->openGLWidget_3d->resize(saveWidthOpenGL, saveHeightOpenGL); // and resize it
-    if ((ui->spinBox_3d_resolution->value() == ui->openGLWidget_3d->width()) & (!ui->checkBox_3d_capture_fullscreen->isChecked()))
-            ui->openGLWidget_3d->update(); // force update of 3D scene if width of widget hasn't changed
+    if ((ui->spinBox_3d_resolution->value() == ui->openGLWidget_3d->width()) & (!ui->checkBox_3d_capture_fullscreen->isChecked())) {
+        ui->openGLWidget_3d->update(); // force update of 3D scene if width of widget hasn't changed
+    }
 
     ui->frame_3D_capture->setEnabled(true); // activate capture panel
     ui->checkBox_3d_capture->setChecked(false); // set capture button to initial state
@@ -1615,22 +1716,30 @@ void MainWindow::keyReleaseEvent(QKeyEvent *keyEvent) // spacebar = move view in
         QApplication::restoreOverrideCursor(); // Restore cursor
     }
     else {
-        if (keyEvent->key() == Qt::Key_Left)
+        if (keyEvent->key() == Qt::Key_Left) {
             ui->openGLWidget_3d->SetShiftLeft();
-        if (keyEvent->key() == Qt::Key_Right)
+        }
+        if (keyEvent->key() == Qt::Key_Right) {
             ui->openGLWidget_3d->SetShiftRight();
-        if (keyEvent->key() == Qt::Key_Up)
+        }
+        if (keyEvent->key() == Qt::Key_Up) {
             ui->openGLWidget_3d->SetShiftUp();
-        if (keyEvent->key() == Qt::Key_Down)
+        }
+        if (keyEvent->key() == Qt::Key_Down) {
             ui->openGLWidget_3d->SetShiftDown();
-        if (keyEvent->key() == Qt::Key_PageUp)
+        }
+        if (keyEvent->key() == Qt::Key_PageUp) {
             ui->openGLWidget_3d->SetAngleUp();
-        if (keyEvent->key() == Qt::Key_PageDown)
+        }
+        if (keyEvent->key() == Qt::Key_PageDown) {
             ui->openGLWidget_3d->SetAngleDown();
-        if (keyEvent->key() == Qt::Key_Home)
+        }
+        if (keyEvent->key() == Qt::Key_Home) {
             ui->openGLWidget_3d->SetAngleLeft();
-        if (keyEvent->key() == Qt::Key_End)
+        }
+        if (keyEvent->key() == Qt::Key_End) {
             ui->openGLWidget_3d->SetAngleRight();
+        }
     }
 }
 
@@ -1666,7 +1775,7 @@ void MainWindow::keyPressEvent(QKeyEvent *keyEvent) // special keys
 
 /////////////////// Mouse events //////////////////////
 
-void MainWindow::mouseReleaseEvent(QMouseEvent *eventRelease) // event triggered by releasing mouse button
+void MainWindow::mouseReleaseEvent(QMouseEvent * /*eventRelease*/) // event triggered by releasing mouse button
 {
     QApplication::restoreOverrideCursor(); // Restore cursor
 
@@ -1684,11 +1793,13 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *eventRelease) // event triggered
 
 void MainWindow::mousePressEvent(QMouseEvent *eventPress) // event triggered by a mouse click
 {
-    if (!loaded) return; // no image = get out
+    if (!loaded) {
+        return; // no image = get out
+    }
 
     if (ui->label_viewport->underMouse()) { // mouse over viewport ?
-        bool key_control = QGuiApplication::queryKeyboardModifiers().testFlag(Qt::ControlModifier); // modifier keys pressed ? (shift control etc)
-        bool key_alt = QGuiApplication::queryKeyboardModifiers().testFlag(Qt::AltModifier);
+        //bool key_control = QGuiApplication::queryKeyboardModifiers().testFlag(Qt::ControlModifier); // modifier keys pressed ? (shift control etc)
+        //bool key_alt = QGuiApplication::queryKeyboardModifiers().testFlag(Qt::AltModifier);
 
         mouse_origin = ui->label_viewport->mapFromGlobal(QCursor::pos()); // current mouse position, save it
         cv::Point pos = Viewport2Image(cv::Point(mouse_origin.x(), mouse_origin.y())); // convert from viewport to image coordinates
@@ -1700,30 +1811,26 @@ void MainWindow::mousePressEvent(QMouseEvent *eventPress) // event triggered by 
             return;
         }
         if ((mouseButton == Qt::MiddleButton) & (pos.x >= 0) & (pos.x < image.cols)
-                                            & (pos.y >= 0) & (pos.y < image.rows)) { // right button = get gray value
+            & (pos.y >= 0) & (pos.y < image.rows)) { // right button = get gray value
             uchar color = depthmap.at<uchar>(pos.y, pos.x); // get gray "color" under mouse cursor
             ui->label_gray_level->setText(QString::number(color)); // show it
             return;
         }
-        else if (loaded) {
+        if (loaded) {
             int row = ui->listWidget_labels->currentRow(); // get current label number in list
             if (mouseButton == Qt::LeftButton) { // left mouse button ?
-                int size;
-                if (zoom < 1)
-                    size = 1.0 / zoom * 6;
-                else
-                    size = zoom * 6;
+                int size = (zoom < 1) ? 1.0 / zoom * 6 : zoom * 6;
                 if ((pos.x >= gradients[row].endPoint.x - size - 1) & (pos.y >= gradients[row].endPoint.y - size - 1)
-                         & (pos.x <= gradients[row].endPoint.x + size + 1) & (pos.y <= gradients[row].endPoint.y + size + 1)) { // mouse cursor over end point
-                     moveEnd = true; // begin moving it
+                    & (pos.x <= gradients[row].endPoint.x + size + 1) & (pos.y <= gradients[row].endPoint.y + size + 1)) { // mouse cursor over end point
+                    moveEnd = true; // begin moving it
                 }
                 else if ((pos.x >= gradients[row].beginPoint.x - size - 1) & (pos.y >= gradients[row].beginPoint.y - size - 1)
-                      & (pos.x <= gradients[row].beginPoint.x + size + 1) & (pos.y <= gradients[row].beginPoint.y + size + 1)) { // mouse cursor over begin point
+                    & (pos.x <= gradients[row].beginPoint.x + size + 1) & (pos.y <= gradients[row].beginPoint.y + size + 1)) { // mouse cursor over begin point
                     moveBegin = true; // begin moving it
 
                 }
                 else if ((pos.x >= 0) & (pos.x < image.cols)
-                         & (pos.y >= 0) & (pos.y < image.rows)) { // select label in viewport
+                    & (pos.y >= 0) & (pos.y < image.rows)) { // select label in viewport
                     int value = labels.at<int>(pos.y, pos.x); // get label mask value under mouse cursor
                     for (int i = 0; i < ui->listWidget_labels->count(); i++) { // find clicked label id
                         QListWidgetItem *item = ui->listWidget_labels->item(i); // pointer on item
@@ -1733,7 +1840,7 @@ void MainWindow::mousePressEvent(QMouseEvent *eventPress) // event triggered by 
                         }
                     }
                 }
-        }
+            }
         }
     }
     else if (ui->label_thumbnail->underMouse()) { // if mouse over thumbnail
@@ -1744,7 +1851,7 @@ void MainWindow::mousePressEvent(QMouseEvent *eventPress) // event triggered by 
             // convert middle of viewport from thumbnail to image coordinates
             int middleX = double(mouse_pos.x() - (ui->label_thumbnail->width() - ui->label_thumbnail->pixmap()->width()) / 2) / ui->label_thumbnail->pixmap()->width() * image.cols;
             int middleY = double(mouse_pos.y() - (ui->label_thumbnail->height() - ui->label_thumbnail->pixmap()->height()) / 2) / ui->label_thumbnail->pixmap()->height() * image.rows;
-            SetViewportXY(middleX - viewport.width /2, middleY - viewport.height /2); // set viewport to new middle position
+            SetViewportXY(middleX - viewport.width / 2, middleY - viewport.height / 2); // set viewport to new middle position
 
             ShowThumbnail(); // show thumbnail
             Render(); // show result
@@ -1752,9 +1859,11 @@ void MainWindow::mousePressEvent(QMouseEvent *eventPress) // event triggered by 
     }
 }
 
-void MainWindow::mouseMoveEvent(QMouseEvent *eventMove) // first mouse click has already been treated and is holded down
+void MainWindow::mouseMoveEvent(QMouseEvent * /*eventMove*/) // first mouse click has already been treated and is holded down
 {
-    if (!loaded) return;// no image = get out
+    if (!loaded) {
+        return;// no image = get out
+    }
 
     if (ui->label_thumbnail->underMouse()) { // mouse over thumbnail ?
         QPoint mouse_pos = ui->label_thumbnail->mapFromGlobal(QCursor::pos()); // current mouse position
@@ -1763,7 +1872,7 @@ void MainWindow::mouseMoveEvent(QMouseEvent *eventMove) // first mouse click has
             // convert middle of viewport from thumbnail to image coordinates
             int middleX = double(mouse_pos.x() - (ui->label_thumbnail->width() - ui->label_thumbnail->pixmap()->width()) / 2) / ui->label_thumbnail->pixmap()->width() * image.cols;
             int middleY = double(mouse_pos.y() - (ui->label_thumbnail->height() - ui->label_thumbnail->pixmap()->height()) / 2) / ui->label_thumbnail->pixmap()->height() * image.rows;
-            SetViewportXY(middleX - viewport.width /2, middleY - viewport.height /2); // set viewport to new middle position
+            SetViewportXY(middleX - viewport.width / 2, middleY - viewport.height / 2); // set viewport to new middle position
 
             ShowThumbnail(); // show thumbnail
             Render(); // display result
@@ -1774,10 +1883,18 @@ void MainWindow::mouseMoveEvent(QMouseEvent *eventMove) // first mouse click has
         QPoint mouse_pos = ui->label_viewport->mapFromGlobal(QCursor::pos()); // current mouse position
         cv::Point pos = Viewport2Image(cv::Point(mouse_pos.x(), mouse_pos.y())); // convert from viewport to image coordinates
 
-        if (pos.x < 1) pos.x = 1; // mouse coordinates can't be outside image
-        if (pos.y < 1) pos.y = 1;
-        if (pos.x > image.cols-2) pos.x = image.cols - 2;
-        if (pos.y > image.rows-2) pos.y = image.rows - 2;
+        if (pos.x < 1) {
+            pos.x = 1; // mouse coordinates can't be outside image
+        }
+        if (pos.y < 1) {
+            pos.y = 1;
+        }
+        if (pos.x > image.cols - 2) {
+            pos.x = image.cols - 2;
+        }
+        if (pos.y > image.rows - 2) {
+            pos.y = image.rows - 2;
+        }
 
         if (moveBegin) { // move base of label vector
             int row = ui->listWidget_labels->currentRow(); // get current label
@@ -1790,7 +1907,7 @@ void MainWindow::mouseMoveEvent(QMouseEvent *eventMove) // first mouse click has
             ChangeLabelGradient();
         }
         else if ((mouseButton == Qt::MiddleButton) & (pos.x >= 0) & (pos.x < image.cols)
-                                                  & (pos.y >= 0) & (pos.y < image.rows)) { // show gray "color" under mouse cursor
+            & (pos.y >= 0) & (pos.y < image.rows)) { // show gray "color" under mouse cursor
             uchar color = depthmap.at<uchar>(pos.y, pos.x); // get color in labels mask
             ui->label_gray_level->setText(QString::number(color)); // show it
             return;
@@ -1811,8 +1928,9 @@ void MainWindow::mouseMoveEvent(QMouseEvent *eventMove) // first mouse click has
 
 void MainWindow::wheelEvent(QWheelEvent *wheelEvent) // mouse wheel turned
 {
-    if (!loaded)
+    if (!loaded) {
         return;// no image = get out
+    }
 
     if (ui->label_viewport->underMouse()) { // if mouse over viewport
         mouse_origin = ui->label_viewport->mapFromGlobal(QCursor::pos()); // mouse position
@@ -1836,7 +1954,7 @@ cv::Point MainWindow::Viewport2Image(const cv::Point &p) // convert viewport to 
 {
     int posX = double(p.x - (ui->label_viewport->width() - ui->label_viewport->pixmap()->width()) / 2) / zoom + viewport.x;
     int posY = double(p.y - (ui->label_viewport->height() - ui->label_viewport->pixmap()->height()) / 2) / zoom + viewport.y;
-    return cv::Point(posX, posY);
+    return { posX, posY };
 }
 
 void MainWindow::ShowThumbnail() // image thumnail with transparent viewport indicator
@@ -1846,7 +1964,10 @@ void MainWindow::ShowThumbnail() // image thumnail with transparent viewport ind
         return;
     }
 
-    double p1x, p1y, p2x, p2y; // rectangle position
+    double p1x;
+    double p1y;
+    double p2x;
+    double p2y; // rectangle position
     if (viewport.width == image.cols) { // entire horizontal view ?
         p1x = 0;
         p2x = ui->label_thumbnail->pixmap()->width();
@@ -1860,7 +1981,7 @@ void MainWindow::ShowThumbnail() // image thumnail with transparent viewport ind
 
     if (viewport.height == image.rows) { // entire vertical view ?
         p1y = 0;
-        p2y= ui->label_thumbnail->pixmap()->height();
+        p2y = ui->label_thumbnail->pixmap()->height();
     }
     else { // partial view
         p1y = double(viewport.y) / image.rows;
@@ -1870,8 +1991,8 @@ void MainWindow::ShowThumbnail() // image thumnail with transparent viewport ind
     }
 
     Mat thumbnail_temp = Mat::zeros(thumbnail.rows, thumbnail.cols, CV_8UC3); // create thumbnail mask
-    rectangle(thumbnail_temp, cv::Point(p1x, p1y), cv::Point(p2x-1, p2y-1), Scalar(92,92,92), -1); // draw filled rectangle representing the viewport position
-    rectangle(thumbnail_temp, cv::Point(p1x, p1y), cv::Point(p2x-1, p2y-1), Scalar(255,255,255), 2); // draw rectangle with thick border
+    rectangle(thumbnail_temp, cv::Point(p1x, p1y), cv::Point(p2x - 1, p2y - 1), Scalar(92, 92, 92), -1); // draw filled rectangle representing the viewport position
+    rectangle(thumbnail_temp, cv::Point(p1x, p1y), cv::Point(p2x - 1, p2y - 1), Scalar(255, 255, 255), 2); // draw rectangle with thick border
     cv::addWeighted(thumbnail, 1, thumbnail_temp, 0.25, 0, thumbnail_temp, -1); // add to thumbnail with transparency
     ui->label_thumbnail->setPixmap(Mat2QPixmap(thumbnail_temp)); // update thumbnail view
 }
@@ -1888,18 +2009,30 @@ void MainWindow::UpdateViewportDimensions() // recompute viewport width and heig
         viewport.height = image.rows;
         viewport.y = 0;
     }
-    if (viewport.x > (image.cols - viewport.width)) viewport.x = image.cols - viewport.width; // can't be out of image at right-bottom
-    if (viewport.y > (image.rows - viewport.height)) viewport.y = image.rows - viewport.height;
+    if (viewport.x > (image.cols - viewport.width)) {
+        viewport.x = image.cols - viewport.width; // can't be out of image at right-bottom
+    }
+    if (viewport.y > (image.rows - viewport.height)) {
+        viewport.y = image.rows - viewport.height;
+    }
 }
 
 void MainWindow::SetViewportXY(const int &x, const int &y) // set viewport top-left to (x,y) new coordinates
 {
     viewport.x = x;
     viewport.y = y;
-    if (viewport.x < 0) viewport.x = 0; // can't be out of image
-    if (viewport.x > image.cols - viewport.width) viewport.x = image.cols - viewport.width;
-    if (viewport.y < 0) viewport.y = 0;
-    if (viewport.y > image.rows - viewport.height) viewport.y = image.rows - viewport.height;
+    if (viewport.x < 0) {
+        viewport.x = 0; // can't be out of image
+    }
+    if (viewport.x > image.cols - viewport.width) {
+        viewport.x = image.cols - viewport.width;
+    }
+    if (viewport.y < 0) {
+        viewport.y = 0;
+    }
+    if (viewport.y > image.rows - viewport.height) {
+        viewport.y = image.rows - viewport.height;
+    }
 
     ui->horizontalScrollBar_viewport->blockSignals(true); // horizontal scrollbars must not trigger any action
     ui->horizontalScrollBar_viewport->setValue(viewport.x); // new x value
@@ -1911,10 +2044,12 @@ void MainWindow::SetViewportXY(const int &x, const int &y) // set viewport top-l
 
 void MainWindow::Render() // show masks for image + depthmap + selection
 {
-    if (!loaded) // no image to display
+    if (!loaded) { // no image to display
         return;
+    }
 
-    int oldMiddleX, oldMiddleY;
+    int oldMiddleX;
+    int oldMiddleY;
     if (oldZoom != zoom) { // zoom changed ?
         oldMiddleX = viewport.x + viewport.width / 2; // current middle of viewport for zooming to center of image
         oldMiddleY = viewport.y + viewport.height / 2;
@@ -1926,8 +2061,8 @@ void MainWindow::Render() // show masks for image + depthmap + selection
         UpdateViewportDimensions(); // recompute viewport width and height
         double newPosX = oldMiddleX - viewport.width / 2; // compute new middle of viewport
         double newPosY = oldMiddleY - viewport.height / 2;
-        ui->horizontalScrollBar_viewport->setMaximum(image.cols-viewport.width); // update scrollbars range
-        ui->verticalScrollBar_viewport->setMaximum(image.rows-viewport.height);
+        ui->horizontalScrollBar_viewport->setMaximum(image.cols - viewport.width); // update scrollbars range
+        ui->verticalScrollBar_viewport->setMaximum(image.rows - viewport.height);
         SetViewportXY(newPosX, newPosY); // set top-left coordinates of viewport to new value
         ShowZoomValue(); // display new zoom value
         oldZoom = zoom; // backup zoom value
@@ -1935,14 +2070,16 @@ void MainWindow::Render() // show masks for image + depthmap + selection
 
     Mat image_temp = CopyFromImage(image, viewport); // copy only zoomed part of image
     disp_color = Mat::zeros(image_temp.rows, image_temp.cols, CV_8UC3); // empty new view
-    if (ui->checkBox_image->isChecked()) // image mask with transparency
-        cv::addWeighted(disp_color, 1-double(ui->horizontalSlider_blend_image->value()) / 100,
-                        image_temp, double(ui->horizontalSlider_blend_image->value()) / 100,
-                        0, disp_color, -1);
-    if (ui->checkBox_depthmap->isChecked() & (!depthmap.empty())) // depthmap with transparency
+    if (ui->checkBox_image->isChecked()) { // image mask with transparency
+        cv::addWeighted(disp_color, 1 - double(ui->horizontalSlider_blend_image->value()) / 100,
+            image_temp, double(ui->horizontalSlider_blend_image->value()) / 100,
+            0, disp_color, -1);
+    }
+    if (ui->checkBox_depthmap->isChecked() & (!depthmap.empty())) { // depthmap with transparency
         cv::addWeighted(disp_color, 1,
-                        CopyFromImage(depthmap, viewport), double(ui->horizontalSlider_blend_depthmap->value()) / 100,
-                        0, disp_color, -1);
+            CopyFromImage(depthmap, viewport), double(ui->horizontalSlider_blend_depthmap->value()) / 100,
+            0, disp_color, -1);
+    }
     if ((!selection.empty()) & (loaded)) { // something selected ?
         Mat selection_temp;
         selection.copyTo(selection_temp); // make a copy of selection mask
@@ -1951,37 +2088,45 @@ void MainWindow::Render() // show masks for image + depthmap + selection
 
         // draw end point : a blue tiny rectangle crossed by diagonals
         int size;
-        if (zoom < 1)
+        if (zoom < 1) {
             size = 1.0 / zoom * 6;
-        else
+        }
+        else {
             size = zoom * 6;
+        }
         cv::rectangle(selection_temp, Rect(gradients[row].endPoint.x - size, gradients[row].endPoint.y - size, size * 2 + 1, size * 2 + 1),
-                      Vec3b(255, 0, 0), 2);
+            Vec3b(255, 0, 0), 2);
         cv::line(selection_temp, cv::Point(gradients[row].endPoint.x - size, gradients[row].endPoint.y - size),
-                              cv::Point(gradients[row].endPoint.x + size, gradients[row].endPoint.y + size),
-                              Vec3b(255, 0, 0), 2);
+            cv::Point(gradients[row].endPoint.x + size, gradients[row].endPoint.y + size),
+            Vec3b(255, 0, 0), 2);
         cv::line(selection_temp, cv::Point(gradients[row].endPoint.x - size, gradients[row].endPoint.y + size),
-                              cv::Point(gradients[row].endPoint.x + size, gradients[row].endPoint.y - size),
-                              Vec3b(255, 0, 0), 2);
+            cv::Point(gradients[row].endPoint.x + size, gradients[row].endPoint.y - size),
+            Vec3b(255, 0, 0), 2);
         // draw begin point : a red tiny rectangle crossed by diagonals
         cv::rectangle(selection_temp, Rect(gradients[row].beginPoint.x - size, gradients[row].beginPoint.y - size, size * 2 + 1, size * 2 + 1),
-                      Vec3b(0, 0, 255), 2);
+            Vec3b(0, 0, 255), 2);
         cv::line(selection_temp, cv::Point(gradients[row].beginPoint.x - size, gradients[row].beginPoint.y - size),
-                              cv::Point(gradients[row].beginPoint.x + size, gradients[row].beginPoint.y + size),
-                              Vec3b(0, 0, 255), 2);
+            cv::Point(gradients[row].beginPoint.x + size, gradients[row].beginPoint.y + size),
+            Vec3b(0, 0, 255), 2);
         cv::line(selection_temp, cv::Point(gradients[row].beginPoint.x - size, gradients[row].beginPoint.y + size),
-                              cv::Point(gradients[row].beginPoint.x + size, gradients[row].beginPoint.y - size),
-                              Vec3b(0, 0, 255), 2);
+            cv::Point(gradients[row].beginPoint.x + size, gradients[row].beginPoint.y - size),
+            Vec3b(0, 0, 255), 2);
         Vec3b CO; // color of vector
-        if ((moveBegin) | (moveEnd)) // is it being moved ?
+        if ((moveBegin) | (moveEnd)) { // is it being moved ?
             CO = Vec3b(0, 255, 0); // yes = green
-        else
+        }
+        else {
             CO = Vec3b(255, 255, 255); // no = white
+        }
         cv::arrowedLine(selection_temp, gradients[row].beginPoint, gradients[row].endPoint, CO, 1, 8, 0, 0.2); // draw vector
 
         selection_temp = CopyFromImage(selection_temp, viewport); // only keep the view part of selection mask
-        if (zoom <= 1) selection_temp = DilatePixels(selection_temp, int(1/zoom)); // dilation depends of zoom
-            else selection_temp = DilatePixels(selection_temp, 3-zoom);
+        if (zoom <= 1) {
+            selection_temp = DilatePixels(selection_temp, int(1 / zoom)); // dilation depends of zoom
+        }
+        else {
+            selection_temp = DilatePixels(selection_temp, 3 - zoom);
+        }
         /*cv::addWeighted(disp_color, 1,
                         selection_temp, 0.25,
                         0, disp_color, -1);*/
@@ -2018,9 +2163,9 @@ void MainWindow::ChangeLabelGradient() // update depthmap mask with gradient
     int row = ui->listWidget_labels->currentRow(); // get current label row in list
 
     GradientFillGray(gradients[row].gradient, depthmap, currentLabelMask,
-                     gradients[row].beginPoint, gradients[row].endPoint,
-                     gradients[row].beginColor, gradients[row].endColor,
-                     gradients[row].curve, selection_rect); // fill depthmap mask with gradient
+        gradients[row].beginPoint, gradients[row].endPoint,
+        gradients[row].beginColor, gradients[row].endColor,
+        gradients[row].curve, selection_rect); // fill depthmap mask with gradient
 
     ui->openGLWidget_3d->depthmap3D = depthmap;
     updateVertices3D = true;
@@ -2055,13 +2200,14 @@ void MainWindow::readPositionSettings()
     restoreState(qsettings.value("savestate", saveState()).toByteArray());
     move(qsettings.value("pos", pos()).toPoint());
     resize(qsettings.value("size", size()).toSize());
-    if (qsettings.value("maximized", true).toBool())
+    if (qsettings.value("maximized", true).toBool()) {
         showMaximized();
+    }
 
     qsettings.endGroup();
 }
 
-void MainWindow::moveEvent(QMoveEvent*)
+void MainWindow::moveEvent(QMoveEvent* /*event*/)
 {
     writePositionSettings();
 }

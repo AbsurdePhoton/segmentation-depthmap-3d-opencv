@@ -34,7 +34,7 @@ FORMS    += mainwindow.ui
 CONFIG += link_pkgconfig
 PKGCONFIG += opencv4
 
-QMAKE_CXXFLAGS += -std=c++11
+QMAKE_CXXFLAGS += -std=c++17
 
 # icons
 RESOURCES += resources.qrc
