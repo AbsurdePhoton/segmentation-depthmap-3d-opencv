@@ -38,6 +38,9 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+    void writePositionSettings();
+    void readPositionSettings();
+
 public slots:
 
 private slots:
@@ -52,7 +55,7 @@ private slots:
     void on_listWidget_labels_currentItemChanged(QListWidgetItem *currentItem); // show current label color when item change
 
     //// load & save
-    void ChangeBaseDir(QString filename); // Set base dir and file
+    void ChangeBaseDir(const QString& filename); // Set base dir and file
     void SaveDirBaseFile(); // just to keep the last open dir
 
     void DisableGUI();
@@ -123,13 +126,16 @@ private:
     void DeleteAllLabels(); // delete ALL labels and create one new if wanted
 
     //// Keyboard & mouse events
-    void keyPressEvent(QKeyEvent *keyEvent); // for the create cell mode
-    void keyReleaseEvent(QKeyEvent *keyEvent);
+    void keyPressEvent(QKeyEvent *keyEvent) override; // for the create cell mode
+    void keyReleaseEvent(QKeyEvent *keyEvent) override;
 
-    void mouseReleaseEvent(QMouseEvent *eventRelease); // when the mouse button is released
-    void mousePressEvent(QMouseEvent *eventPress); // mouse events = zoom, set cell color etc
-    void mouseMoveEvent(QMouseEvent *eventPress);
-    void wheelEvent(QWheelEvent *wheelEvent);
+    void mouseReleaseEvent(QMouseEvent *eventRelease) override; // when the mouse button is released
+    void mousePressEvent(QMouseEvent *eventPress) override; // mouse events = zoom, set cell color etc
+    void mouseMoveEvent(QMouseEvent *eventPress) override;
+    void wheelEvent(QWheelEvent *wheelEvent) override;
+
+    void moveEvent(QMoveEvent*) override;
+    void resizeEvent(QResizeEvent*) override;
 
     //// Display
     void Render(); // display image in viewport with depthmap and selection

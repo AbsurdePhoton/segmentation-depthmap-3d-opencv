@@ -40,23 +40,38 @@
 
 using namespace cv;
 
+namespace {
+
+    int NumberOfIndexes(const int &rows, const int &cols) // number of expected indexes for an image
+    {
+        if (rows <= 0) { // special case
+            return 0;
+        } // a bit complicated, see ComputeIndexes()
+        return double(double(cols) * double(rows)) + double((double(cols) * 2 - 1) * (double(rows) / 2 - 1));
+    }
+
+    int NumberOfVertices(const int &rows, const int &cols) // number of expected vertices for an image
+    {
+        return rows * cols;
+    }
+
+} // namespace
+
 ///////////////////////////////////////////////
 //// Widget
 ///////////////////////////////////////////////
 
 openGLWidget::openGLWidget(QWidget *parent)
     : QOpenGLWidget(parent),
-      vertexbuffer(QOpenGLBuffer::VertexBuffer),
-      indexbuffer(QOpenGLBuffer::IndexBuffer),
-      colorbuffer(QOpenGLBuffer::VertexBuffer)
+    vertexbuffer(QOpenGLBuffer::VertexBuffer),
+    indexbuffer(QOpenGLBuffer::IndexBuffer),
+    colorbuffer(QOpenGLBuffer::VertexBuffer)
 {
 
 }
 
 openGLWidget::~openGLWidget()
-{
-
-}
+= default;
 
 ///////////////////////////////////////////////
 //// Redefine widget main functions :
@@ -95,29 +110,16 @@ void openGLWidget::initializeGL() // launched when the widget is initialized
 
     //// Lights
     GLfloat light_position[] = { 5000, 0, 5000, 1.0 };
-    GLfloat light_ambient[]  = { 0.1, 0.1, 0.1, 1.0};
-    GLfloat light_diffuse[]  = { 3, 3, 3, 0.5};
+    GLfloat light_ambient[] = { 0.1, 0.1, 0.1, 1.0 };
+    GLfloat light_diffuse[] = { 3, 3, 3, 0.5 };
     glEnable(GL_LIGHTING); // enable lighting
     glEnable(GL_LIGHT0); // define the first light
     glLightfv(GL_LIGHT0, GL_POSITION, light_position);
-    glLightfv(GL_LIGHT0, GL_AMBIENT,  light_ambient); // ambient
-    glLightfv(GL_LIGHT0, GL_DIFFUSE,  light_diffuse); // diffuse
+    glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient); // ambient
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse); // diffuse
 }
 
-int openGLWidget::NumberOfIndexes(const int &rows, const int &cols) // number of expected indexes for an image
-{
-    if (rows <= 0) // special case
-            return 0;
-        else // a bit complicated, see ComputeIndexes()
-            return double(double(cols) * double(rows)) + double((double(cols) * 2 - 1) * (double(rows) / 2 - 1));
-}
-
-int openGLWidget::NumberOfVertices(const int &rows, const int &cols) // number of expected vertices for an image
-{
-    return rows * cols;
-}
-
-GLuint openGLWidget::VertexIndex(const int &y, const int &x) // pixel's index in a image
+GLuint openGLWidget::VertexIndex(const int &y, const int &x) const // pixel's index in a image
 {
     return y * image3D.cols + x; // just like an array
 }
@@ -131,17 +133,17 @@ void openGLWidget::ComputeVertices()  // (re)create vertices array and buffer
     int halfX = -depthmap3D.cols / 2; // to center the axes in middle of image
     int halfY = depthmap3D.rows / 2;
 
-    for (float row = 0; row < depthmap3D.rows; row++) { // for each row of the image
-        for (float col = 0; col < depthmap3D.cols; col++) { // for each pixel in the row from left to right
-            vertexarray.push_back(QVector3D(col+halfX, -row+halfY,
-                                            (depthmap3D.at<uchar>(row, col) - 127) * depth3D)); // vertex in buffer
+    for (int row = 0; row < depthmap3D.rows; row++) { // for each row of the image
+        for (int col = 0; col < depthmap3D.cols; col++) { // for each pixel in the row from left to right
+            vertexarray.push_back(QVector3D(col + halfX, -row + halfY,
+                (depthmap3D.at<uchar>(row, col) - 127) * depth3D)); // vertex in buffer
         }
     }
 
     vertexbuffer.create(); // create VBO vertices buffer
     vertexbuffer.bind(); // bind it
     vertexbuffer.setUsagePattern(QOpenGLBuffer::DynamicDraw); // vertex buffer will be often modified
-    vertexbuffer.allocate(vertexarray.constData(), vertexarray.size()*sizeof(QVector3D)); // allocate and populate in GPU RAM
+    vertexbuffer.allocate(vertexarray.constData(), vertexarray.size() * sizeof(QVector3D)); // allocate and populate in GPU RAM
     vertexbuffer.release(); // done
 
     computeVertices3D = false; // done recomputing
@@ -155,9 +157,9 @@ void openGLWidget::UpdateVertices() // update vertices z
     }
 
     vertexbuffer.bind(); // use current VBO
-    GLfloat* posBuffer = (GLfloat*) (vertexbuffer.map(QOpenGLBuffer::WriteOnly)); // map a pointer on it
+    auto* posBuffer = (GLfloat*)(vertexbuffer.map(QOpenGLBuffer::WriteOnly)); // map a pointer on it
 
-    if (posBuffer != (GLfloat*) NULL) { // pointer not valid ?
+    if (posBuffer != (GLfloat*) nullptr) { // pointer not valid ?
 
         int index; // index of current vertex
 
@@ -190,27 +192,27 @@ void openGLWidget::ComputeIndexes() // (re)create index array and buffer
     int arraySize = NumberOfIndexes(image3D.rows, image3D.cols); // how many indexes ?
     //indexarray.reserve(arraySize); // reserve memory space in advance
 
-    for (int row = 0; row < depthmap3D.rows -1; row++) { // for each row of the images
-        if (int(row)%2 == 0) { // row number is even
+    for (int row = 0; row < depthmap3D.rows - 1; row++) { // for each row of the images
+        if (int(row) % 2 == 0) { // row number is even
             for (int col = 0; col < depthmap3D.cols; col++) { // for each pixel in the row from left to right
                 indexarray.push_back(VertexIndex(row, col)); // index in buffer
-                indexarray.push_back(VertexIndex(row+1, col));
+                indexarray.push_back(VertexIndex(row + 1, col));
             }
         }
         else { // row number is odd
-            for (int col = depthmap3D.cols - 1; col > 0 ; col--) { // for each pixel in the row from right to left except the first one
-                indexarray.push_back(VertexIndex(row+1, col)); // the first time it creates a "degenerate triangle"
-                indexarray.push_back(VertexIndex(row, col-1));
+            for (int col = depthmap3D.cols - 1; col > 0; col--) { // for each pixel in the row from right to left except the first one
+                indexarray.push_back(VertexIndex(row + 1, col)); // the first time it creates a "degenerate triangle"
+                indexarray.push_back(VertexIndex(row, col - 1));
             }
             int col = 1;
-            indexarray.push_back(VertexIndex(row+1, col-1)); // add one more vertex to finish the column
+            indexarray.push_back(VertexIndex(row + 1, col - 1)); // add one more vertex to finish the column
         }
     }
 
     indexbuffer.create(); // create VBO vertices buffer
     indexbuffer.bind(); // bind it
     indexbuffer.setUsagePattern(QOpenGLBuffer::StaticDraw); // vertex buffer will be often modified
-    indexbuffer.allocate(indexarray.constData(), indexarray.size()*sizeof(GLuint)); // allocate and populate in GPU RAM
+    indexbuffer.allocate(indexarray.constData(), indexarray.size() * sizeof(GLuint)); // allocate and populate in GPU RAM
     indexbuffer.release(); // done
 
     computeIndexes3D = false; // done recomputing
@@ -223,11 +225,10 @@ void openGLWidget::ComputeColors() // (re)create colors array and buffer
     colorarray.clear(); // destroy buffers and arrays
     colorbuffer.destroy();
     colorarray.reserve(NumberOfVertices(image3D.rows, image3D.cols)); // reserve memory space in advance
-    Vec3b CO; // pixel color of reference image
 
-    for (float row = 0; row < image3D.rows; row++) { // for each row of the images
-        for (float col = 0; col < image3D.cols; col++) { // for each pixel in the row from left to right
-            CO = Vec3b(image3D.at<Vec3b>(row, col)); // // pixel color of reference image
+    for (int row = 0; row < image3D.rows; row++) { // for each row of the images
+        for (int col = 0; col < image3D.cols; col++) { // for each pixel in the row from left to right
+            auto CO = Vec3b(image3D.at<Vec3b>(row, col)); // // pixel color of reference image
             colorarray.push_back(QVector3D(CO[2] / 255.0, CO[1] / 255.0, CO[0] / 255.0)); // color in buffer, RGB values between 0 and 1
         }
     }
@@ -236,7 +237,7 @@ void openGLWidget::ComputeColors() // (re)create colors array and buffer
 
     colorbuffer.create(); // create colors buffer
     colorbuffer.bind(); // bind it
-    colorbuffer.allocate(colorarray.constData(), colorarray.size()*sizeof(QVector3D)); // copy data to VBO
+    colorbuffer.allocate(colorarray.constData(), colorarray.size() * sizeof(QVector3D)); // copy data to VBO
     colorbuffer.release(); // release VBO
 }
 
@@ -251,22 +252,23 @@ void openGLWidget::SaveToObj(const QString &filename) // Save current 3D arrays 
         //file.close();
 
         // save vertices
-        QVector3D vertex, color;
+        QVector3D vertex;
+        QVector3D color;
         int max = NumberOfVertices(image3D.rows, image3D.cols);
 
         for (int index = 0; index < max; index++) {
             vertex = vertexarray[index];
             color = colorarray[index];
             stream << "v " << vertex.x() << " " << vertex.y() << " " << vertex.z()
-                   << " " << color[0] << " " << color[1] << " " << color[2]
-                   << "\n";
+                << " " << color[0] << " " << color[1] << " " << color[2]
+                << "\n";
         }
 
         // save indexes
         max = NumberOfIndexes(image3D.rows, image3D.cols) - 2;
 
         for (int index = 0; index < max; index++) {
-            stream << "f " << indexarray[index]+1 << " " << indexarray[index+1]+1 << " " << indexarray[index+2]+1 << "\n";
+            stream << "f " << indexarray[index] + 1 << " " << indexarray[index + 1] + 1 << " " << indexarray[index + 2] + 1 << "\n";
         }
 
         file.close();
@@ -301,31 +303,32 @@ void openGLWidget::SaveToPly(const QString &filename) // Save current 3D arrays 
         stream << "property uchar green" << "\n";
         stream << "property uchar blue" << "\n";
 
-          // triangles
+        // triangles
         int maxTriangles = NumberOfIndexes(image3D.rows, image3D.cols) - 2;
         stream << "element face " << maxTriangles << "\n";
         stream << "property list uchar int vertex_index" << "\n";
 
-          // end of header
+        // end of header
         stream << "end_header" << "\n";
 
         //// save vertices
-        QVector3D vertex, color;
+        QVector3D vertex;
+        QVector3D color;
 
         int index; // index of current vertex
         std::string st; // used to get a comma separator for floats, streams use locales !
 
         for (int row = 0; row < image3D.rows; row++) { // for each row of area
             for (int col = 0; col < image3D.cols; col++) { // for each pixel in the row from left to right
-                    index = VertexIndex(row, col); // use index of this pixel
-                    color = colorarray[index];
-                    /*stream << col << " " << -row << " " << qSetRealNumberPrecision(5) << (depthmap3D.at<uchar>(row, col) - 127) * depth3D
-                           << " " << int(round(color[0]*255)) << " " << int(round(color[1]*255)) << " " << int(round(color[2]*255))
-                           << "\n";*/
-                    st = std::to_string(col) + " " + std::to_string(-row) + " " + std::to_string(float((depthmap3D.at<uchar>(row, col) - 127) * depth3D))
-                            + " " + std::to_string(int(round(color[0]*255))) + " " + std::to_string(int(round(color[1]*255))) + " " + std::to_string(int(round(color[2]*255)))
-                            + "\n";
-                    stream << QString::fromStdString(st);
+                index = VertexIndex(row, col); // use index of this pixel
+                color = colorarray[index];
+                /*stream << col << " " << -row << " " << qSetRealNumberPrecision(5) << (depthmap3D.at<uchar>(row, col) - 127) * depth3D
+                       << " " << int(round(color[0]*255)) << " " << int(round(color[1]*255)) << " " << int(round(color[2]*255))
+                       << "\n";*/
+                st = std::to_string(col) + " " + std::to_string(-row) + " " + std::to_string(float((depthmap3D.at<uchar>(row, col) - 127) * depth3D))
+                    + " " + std::to_string(int(round(color[0] * 255))) + " " + std::to_string(int(round(color[1] * 255))) + " " + std::to_string(int(round(color[2] * 255)))
+                    + "\n";
+                stream << QString::fromStdString(st);
             }
         }
 
@@ -333,7 +336,7 @@ void openGLWidget::SaveToPly(const QString &filename) // Save current 3D arrays 
         int maxIndexes = NumberOfIndexes(image3D.rows, image3D.cols) - 2;
 
         for (int index = 0; index < maxIndexes; index++) {
-            stream << "3 " << indexarray[index] << " " << indexarray[index+1] << " " << indexarray[index+2] << "\n";
+            stream << "3 " << indexarray[index] << " " << indexarray[index + 1] << " " << indexarray[index + 2] << "\n";
         }
 
         // Close the file
@@ -346,8 +349,10 @@ void openGLWidget::paintGL() // 3D rendering
 {
     if (lightEnabled) {
         glEnable(GL_LIGHTING); // turn on the lights...
-    } else
+    }
+    else {
         glDisable(GL_LIGHTING); // ... or not
+    }
 
 
     if (qualityEnabled) { // antialiasing
@@ -371,7 +376,9 @@ void openGLWidget::paintGL() // 3D rendering
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear color and depth buffers
 
-    if (anaglyphEnabled) glRotatef(-anaglyphShift, 0.0, 1.0, 0.0); // rotate a bit the first image on y axis
+    if (anaglyphEnabled) {
+        glRotatef(-anaglyphShift, 0.0, 1.0, 0.0); // rotate a bit the first image on y axis
+    }
 
     glLoadIdentity(); // replace current matrix with identity matrix (reset)
 
@@ -388,60 +395,75 @@ void openGLWidget::paintGL() // 3D rendering
     if (axesEnabled) { // yes draw origin axes
         glLineWidth(2); // bigger width of the lines to really see them
 
-        if (anaglyphEnabled) glColor3d(1,1,1);
-            else glColor3d(1,0,0); // x axis color : red
+        if (anaglyphEnabled) {
+            glColor3d(1, 1, 1);
+        }
+        else {
+            glColor3d(1, 0, 0); // x axis color : red
+        }
         glBegin(GL_LINES); // draw several lines
-            glVertex3f(0.0f, 0.0f, 0.0f);
-            glVertex3f(1000.0f, 0.0f, 0.0f);
+        glVertex3f(0.0F, 0.0F, 0.0F);
+        glVertex3f(1000.0F, 0.0F, 0.0F);
         glEnd();
         glBegin(GL_TRIANGLES); // triangle at the end of the line = arrow
-            glVertex3f(  925.0f, -50.0f,   0.0f );
-            glVertex3f(  925.0f,  50.0f,   0.0f );
-            glVertex3f( 1000.0f,   0.0f,   0.0f );
+        glVertex3f(925.0F, -50.0F, 0.0F);
+        glVertex3f(925.0F, 50.0F, 0.0F);
+        glVertex3f(1000.0F, 0.0F, 0.0F);
         glEnd();
 
-        if (anaglyphEnabled) glColor3d(0.85,0.85,0.85);
-            else glColor3d(0,0,1); // y axis color : blue
+        if (anaglyphEnabled) {
+            glColor3d(0.85, 0.85, 0.85);
+        }
+        else {
+            glColor3d(0, 0, 1); // y axis color : blue
+        }
         glBegin(GL_LINES);
-            glVertex3f( 0.0f,     0.0f, 0.0f );
-            glVertex3f( 0.0f, -1000.0f, 0.0f );
+        glVertex3f(0.0F, 0.0F, 0.0F);
+        glVertex3f(0.0F, -1000.0F, 0.0F);
         glEnd();
         glBegin(GL_TRIANGLES);
-            glVertex3f( -50.0f, -925.0f,   0.0f );
-            glVertex3f(  50.0f, -925.0f,   0.0f );
-            glVertex3f(   0.0f, -1000.0f,  0.0f );
+        glVertex3f(-50.0F, -925.0F, 0.0F);
+        glVertex3f(50.0F, -925.0F, 0.0F);
+        glVertex3f(0.0F, -1000.0F, 0.0F);
         glEnd();
 
-        if (anaglyphEnabled) glColor3d(0.75,0.75,0.75);
-            else glColor3d(0,1,0); // z axis color : green
+        if (anaglyphEnabled) {
+            glColor3d(0.75, 0.75, 0.75);
+        }
+        else {
+            glColor3d(0, 1, 0); // z axis color : green
+        }
         glBegin(GL_LINES);
-            glVertex3f( 0.0f, 0.0f,    0.0f);
-            glVertex3f( 0.0f, 0.0f, 1000.0f);
+        glVertex3f(0.0F, 0.0F, 0.0F);
+        glVertex3f(0.0F, 0.0F, 1000.0F);
         glEnd();
         glBegin(GL_TRIANGLES);
-            glVertex3f(0.0f, -50.0f, 925.0f);
-            glVertex3f(0.0f,  50.0f, 925.0f);
-            glVertex3f(0.0f,   0.0f, 1000.0f);
+        glVertex3f(0.0F, -50.0F, 925.0F);
+        glVertex3f(0.0F, 50.0F, 925.0F);
+        glVertex3f(0.0F, 0.0F, 1000.0F);
         glEnd();
     }
 
-    if ((depthmap3D.empty()) | (image3D.empty())) // nothing more to render => exit
+    if ((depthmap3D.empty()) | (image3D.empty())) { // nothing more to render => exit
         return;
+    }
 
     if (computeVertices3D) { // totally recompute vertices
         ComputeVertices();
         updateVertices3D = false;
     }
 
-    if (updateVertices3D) // partially recompute vertices
+    if (updateVertices3D) { // partially recompute vertices
         UpdateVertices();
+    }
 
     if (computeIndexes3D) { // totally recompute vertices
         ComputeIndexes();
     }
 
-    if (computeColors3D) // totally recompute vertices colors
+    if (computeColors3D) { // totally recompute vertices colors
         ComputeColors();
+    }
 
     if (anaglyphEnabled) {
         glRotatef(-anaglyphShift, 0.0, 1.0, 0.0);
@@ -450,15 +472,15 @@ void openGLWidget::paintGL() // 3D rendering
 
     glEnableClientState(GL_VERTEX_ARRAY); // vertices drawing mode
     glEnableClientState(GL_COLOR_ARRAY); // with colors
-        colorbuffer.bind(); // VBO color buffer used
-            glColorPointer(3, GL_FLOAT, 0, NULL); // use color buffer
-        colorbuffer.release(); // done for colors
-        vertexbuffer.bind(); // the same for vertices
-            glVertexPointer(3, GL_FLOAT, 0, NULL);
-        vertexbuffer.release();
-        indexbuffer.bind(); // the same for indexes
-            glDrawElements(GL_TRIANGLE_STRIP, indexarray.size(), GL_UNSIGNED_INT, NULL); // draw triangles
-        indexbuffer.release();
+    colorbuffer.bind(); // VBO color buffer used
+    glColorPointer(3, GL_FLOAT, 0, nullptr); // use color buffer
+    colorbuffer.release(); // done for colors
+    vertexbuffer.bind(); // the same for vertices
+    glVertexPointer(3, GL_FLOAT, 0, nullptr);
+    vertexbuffer.release();
+    indexbuffer.bind(); // the same for indexes
+    glDrawElements(GL_TRIANGLE_STRIP, indexarray.size(), GL_UNSIGNED_INT, nullptr); // draw triangles
+    indexbuffer.release();
     glDisableClientState(GL_VERTEX_ARRAY); // finished defining vertices and colors
     glDisableClientState(GL_COLOR_ARRAY);
 
@@ -467,24 +489,24 @@ void openGLWidget::paintGL() // 3D rendering
         glClear(GL_DEPTH_BUFFER_BIT); // only reset the depth not the colors this time
         //glTranslatef(anaglyphShift * 2048, 0, 0); // bad method !
         glRotatef(anaglyphShift, 0.0, 1.0, 0.0); // rotate a bit the second image on y axis
-        glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA); // blend the right image with the already drawn left image
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // blend the right image with the already drawn left image
         glColorMask(GL_FALSE, GL_TRUE, GL_TRUE, GL_TRUE); // draw only in the cyan channels (blue + green)
 
         glEnableClientState(GL_VERTEX_ARRAY); // exactly as the left image, using the same buffers
         glEnableClientState(GL_COLOR_ARRAY);
         colorbuffer.bind();
-            glColorPointer(3, GL_FLOAT, 0, NULL);
+        glColorPointer(3, GL_FLOAT, 0, nullptr);
         colorbuffer.release();
         vertexbuffer.bind();
-            glVertexPointer(3, GL_FLOAT, 0, NULL);
+        glVertexPointer(3, GL_FLOAT, 0, nullptr);
         vertexbuffer.release();
         indexbuffer.bind();
-            glDrawElements(GL_TRIANGLE_STRIP, indexarray.size(), GL_UNSIGNED_INT, NULL);
+        glDrawElements(GL_TRIANGLE_STRIP, indexarray.size(), GL_UNSIGNED_INT, nullptr);
         indexbuffer.release();
         glDisableClientState(GL_VERTEX_ARRAY);
         glDisableClientState(GL_COLOR_ARRAY);
 
-        glColorMask(GL_TRUE,GL_TRUE,GL_TRUE,GL_TRUE); // red, green and blue channels enabled again
+        glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE); // red, green and blue channels enabled again
     }
 }
 
@@ -496,9 +518,9 @@ void openGLWidget::resizeGL(int width, int height) // called when the widget is 
     glMatrixMode(GL_PROJECTION); // openGL projection mode
     glLoadIdentity();
 #ifdef QT_OPENGL_ES_1 // older versions of openGL
-    glOrthof(-4 * 2048, +4 * 2048, -4 * 2048 / ratio, +4 * 2048  / ratio, -5000*2048, 5000*2048); // define view rectangle and clipping
+    glOrthof(-4 * 2048, +4 * 2048, -4 * 2048 / ratio, +4 * 2048 / ratio, -5000 * 2048, 5000 * 2048); // define view rectangle and clipping
 #else
-    glOrtho(-4 * 2048, +4 * 2048, -4 * 2048 / ratio, +4 * 2048 / ratio, -5000*2048, 5000*2048);
+    glOrtho(-4 * 2048, +4 * 2048, -4 * 2048 / ratio, +4 * 2048 / ratio, -5000 * 2048, 5000 * 2048);
 #endif
     glMatrixMode(GL_MODELVIEW); // now openGL model mode
 }
@@ -510,7 +532,9 @@ void openGLWidget::resizeGL(int width, int height) // called when the widget is 
 
 static void NormalizeAngle(int &angle) // angle must be between 0 and 359°
 {
-    while (angle < 0) angle = 360 + angle; // no negative values
+    while (angle < 0) {
+        angle = 360 + angle; // no negative values
+    }
     angle = angle % 360; // 0 -> 359°
 }
 
@@ -611,9 +635,10 @@ void openGLWidget::mouseMoveEvent(QMouseEvent *event) // move and rotate view wi
     if (event->buttons() & Qt::LeftButton) { // left button = rotate on x and y axes
         SetXRotation(xRot + dy); // x = vertical
         SetYRotation(yRot + dx); // y = horizontal
-    } else if (event->buttons() & Qt::RightButton) { // right button = move the view on x and y axes
-        //setXRotation(xRot + 8 * dy);
-        //setZRotation(zRot + 8 * dx);
+    }
+    else if (event->buttons() & Qt::RightButton) { // right button = move the view on x and y axes
+     //setXRotation(xRot + 8 * dy);
+     //setZRotation(zRot + 8 * dx);
         SetXShift(xShift + dx * 48);
         SetYShift(yShift - dy * 48);
 
@@ -628,10 +653,12 @@ void openGLWidget::wheelEvent(QWheelEvent *event) // zoom
     int n = event->delta(); // amount of wheel turn
     //zoom3D += n / 120 / 2; // should work with this (standard) value
 
-    if (n < 0) // zoom out
+    if (n < 0) { // zoom out
         zoom3D = zoom3D / 1.25;
-    else // zoom in
+    }
+    else { // zoom in
         zoom3D = zoom3D * 1.25;
+    }
 
     emit zoomChanged(zoom3D); // emit signal
 
@@ -645,4 +672,23 @@ void openGLWidget::wheelEvent(QWheelEvent *event) // zoom
 void openGLWidget::Capture() // take a snapshot of rendered 3D scene
 {
     capture3D = grabFramebuffer(); // slow because it relies on glReadPixels() to read back the pixels
+}
+
+class QMainWindowKeyPressEventAccessor : public QMainWindow
+{
+public:
+    void callKeyPressEvent(QKeyEvent *keyEvent)
+    {
+        keyPressEvent(keyEvent);
+    }
+};
+
+void openGLWidget::keyPressEvent(QKeyEvent *keyEvent) // special keys
+{
+    for (QWidget* widget : QApplication::topLevelWidgets()) {
+        if (auto *mainWindow = qobject_cast<QMainWindow*>(widget)) {
+            static_cast<QMainWindowKeyPressEventAccessor*>(mainWindow)->callKeyPressEvent(keyEvent);
+            break;
+        }
+    }
 }

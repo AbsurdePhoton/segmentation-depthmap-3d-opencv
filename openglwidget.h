@@ -87,16 +87,15 @@ protected:
     void initializeGL(); // launched when the widget is initialized
     void paintGL(); // 3D rendering
     void resizeGL(int width, int height); // called when the widget is resized
-    void mousePressEvent(QMouseEvent *event); // save initial mouse position for move and rotate
-    void mouseMoveEvent(QMouseEvent *event); // move and rotate view with mouse buttons
-    void wheelEvent(QWheelEvent *event); // zoom
+    void mousePressEvent(QMouseEvent *event) override; // save initial mouse position for move and rotate
+    void mouseMoveEvent(QMouseEvent *event) override; // move and rotate view with mouse buttons
+    void wheelEvent(QWheelEvent *event) override; // zoom
+    void keyPressEvent(QKeyEvent *keyEvent) override;
     void ComputeVertices(); // create vertices
     void ComputeIndexes(); // create indexes
     void UpdateVertices(); // update vertices z
     void ComputeColors(); // recompute colors
-    int NumberOfVertices(const int &rows, const int &cols); // number of expected vertices for an image
-    int NumberOfIndexes(const int &rows, const int &cols); // number of expected indexes for an image
-    GLuint VertexIndex(const int &y, const int &x); // pixel's index in a image
+    GLuint VertexIndex(const int &y, const int &x) const; // pixel's index in a image
 
 public slots:
 
